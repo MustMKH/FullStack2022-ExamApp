@@ -10,12 +10,3 @@ const Answer = (props) => {
 }
 
 export default Answer;
-
-
-
-/* original code that cannot be altered by user:
-const Answer = (props) => {
-    return (
-        <div> {props.answer.text} </div>
-    );
-} */

@@ -11,19 +11,3 @@ const Question = (props) => {
 }
 
 export default Question;
-
-
-
-/* original code that cannot be altered by user:
-const Question=(props)=>{
-    return (
-        <div>
-        <div>KYSYMYS:{props.question.text}</div>
-        <div>Vastausvaihtoehdot:</div>
-        <ol>
-            <li>{props.question.answers.map(answer=><Answer answer={answer}/>)}</li>
-        </ol>    
-        </div>
-    );
-}
-*/
