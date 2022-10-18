@@ -13,10 +13,14 @@
 }
 
 .exam-items > li {
-  font-size: x-large;
+  font-size: large;
   padding: 10px;
   justify-content: space-between;
   outline: auto;
+}
+
+.answers {
+  margin-left: 25px;
 }
 
 .nav {
@@ -55,22 +59,21 @@ body {
 }
 
 .main-title {
-  margin: 30px;
-  font-size: 32px;
+  font-size: 28px;
+  margin-top: 60px;
 }
 
 .sub-title {
-  margin-left: 68px;
-  font-size: 18px;
+  font-size: 20px;
+  margin-top: 50px;
 }
 
 footer {
-  margin: 10px;
+  margin: 15px;
 }
 
 .main-help {
   margin-top: 0px;
-  margin-left: 45px;
   margin-bottom: 75px;
 }
 
@@ -79,11 +82,9 @@ footer {
   padding: 2px;
 }
 
-/* main {
-  background-image: url(./logo192.png);
-  background-repeat: no-repeat;
-  background-position: right;
-} */
+main {
+  margin: 30px;
+}
 
 .questions {
   color: white;
