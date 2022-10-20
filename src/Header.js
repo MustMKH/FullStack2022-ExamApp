@@ -2,7 +2,7 @@ function Header() {
     return (
       <header>
         <nav className="nav">
-          <img src="./reactlogo.png" alt="React Logo" className="nav-logo" />
+          <img src="./logo192.png" alt="React Logo" className="nav-logo" />
           <h3>React App</h3>
             <ul className="nav-items">
               <li>Tentit</li>

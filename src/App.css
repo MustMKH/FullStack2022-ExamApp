@@ -1,8 +1,13 @@
+:root {
+  --primary:  #75daf1;
+  --secondary:  #f6c36c;
+  --dark: #091315;
+  --light: #eee;
+} 
+
 .exams {
   display: flex;    
-  align-items:center;
-  background-color: #0e1125;
-  color: rgb(116, 183, 206);
+  align-items:center;  
   height: 50px;
   padding: 15px 15px;
 }
@@ -14,9 +19,13 @@
 
 .exam-items > li {
   font-size: large;
+  margin: 8px;
   padding: 10px;
-  justify-content: space-between;
-  outline: auto;
+  outline-color: gray;
+  outline-style: auto;
+  color: #eee;
+  font-size: large;
+  font-weight: 700;  
 }
 
 .answers {
@@ -25,26 +34,28 @@
 
 .nav {
   display: flex;    
-  align-items:center;
-  background-color: #0e1125;
-  color: rgb(116, 183, 206);
+  align-items: center;
+  background-color:  var(--dark);
+  color: var(--primary);
   height: 50px;
   padding: 15px 15px;
 }
 
 .nav > h3 {
   margin-right: auto;
+  margin-left: 5px;
   font-weight: 800;
-  color:rgb(116, 183, 206)
 }
 
 .nav-items {
   list-style: none;
   display: flex;
+  font-size: large;
+  font-weight: 600;
 }
 
 .nav-items > li {
-  padding: 10px;
+  padding: 12px;
   justify-content: space-between;
 }
 
@@ -54,8 +65,9 @@
 }
 
 body {
-  background-color: #1b283c;
-  color:rgb(230, 241, 251);
+  color: var(--primary);
+  background-image: url("BackgroundImage1.jpg"), url("BackgroundImage2.jpg");
+  background-size: cover;
 }
 
 .main-title {
@@ -86,11 +98,18 @@ main {
   margin: 30px;
 }
 
-.questions {
-  color: white;
-  background-color: gray;
+/* .questions {
+  color: rgb(15, 205, 22);
   padding: 16px;
   width: 80%;
   height: auto;
   margin: 0 auto;   
+} */
+
+input[type=text] {
+  width: 750px;
+  height: 24px;
+  font-size: medium;
+  border-radius: 2px;
+  background-color: var(--light);
 }

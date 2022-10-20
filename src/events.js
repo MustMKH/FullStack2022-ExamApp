@@ -1,3 +1,5 @@
+// Event testing:
+
 import React, { useState } from 'react';
 
 function Event() {
@@ -18,5 +20,3 @@ function Event() {
         </div>
     )
 };
-
-export default Event
