@@ -2,9 +2,12 @@ import './App.css';
 import Header from "./Header";
 import Footer from "./Footer";
 import Exam from "./Exam";
-import { useReducer,useEffect } from "react";
+import AlertBox from './AlertBox';
+import { useReducer,useEffect } from 'react';
+import axios from 'axios' // installed
 
-/* TODO: 
+/* TODO:
+ * TEE CLEAR setTimerILLE 
  * Create checkboxes for answers (user: select the right answer, admin: select which answers are correct):
  * Assign numbers or other identifiers to questions and answers
  */
@@ -56,18 +59,25 @@ let exam3 = {
   questions: [question7, question8],
 };
 
-/* TODO: make the instructions accept input from admin 
+/* TODO: make instructions that can be edited by admin 
 let instructions1 = {text: "Lue kysymykset läpi huolellisesti."}
 let instructions2 = {text: "Vastaa kysymykseen valitsemalla oikea vaihtoehto."}
 let instructions3 = {text: "Tarkista vastauksesi."}
 let instructions4 = {text: "Vastauksesi tallentuvat automaattisesti. Voit sulkea selaimen kun olet valmis."} */
 
+// TODO: luo erikseen tallennettava data ja muu data
 let applicationData = {
-  exams: [{
-    questions: [question1, question2, question3, question4, question5, question6, question7, question8]
-  }],
-  toBeSaved: false,
-  initialized: false, 
+  exams: [exam1, exam2, exam3],
+  // TODO: mieti onko järkeä tallentaa näitä tietoja local storageen (antaa käynnistettäessa true arvoja näihin muuttujiin):
+
+}
+
+let initialData = {
+  saveRequired: false,
+  initialized: false,
+  // apumuuttuja setTimeoutille
+  dataSaved: false,
+  timerinApumuuttuja: false 
 }
 
 // The latest version of this app utilizes the useReducer hook. See the useState version in useState.js
@@ -77,39 +87,71 @@ function reducer(state,action) {
     case 'EXAM_RENAMED': {
       console.log("Reducer called, exam renamed", action);
 // PREVIOUS VERSION: return {...state, name: action.payload.name};
-      const stateCopy = { ...state, toBeSaved: true }
+      const stateCopy = { ...state, saveRequired: true }
       stateCopy.exams[action.payload.index].title = action.payload.title
       return stateCopy;
     }
 
     case 'QUESTION_EDITED': {
       console.log("Reducer called, question edited.", action);
-      const stateCopy = { ...state, toBeSaved: true }
+      const stateCopy = { ...state, saveRequired: true }
       stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].contents = action.payload.contents
       return stateCopy
     }
     
     case 'ANSWER_EDITED': {
       console.log("Reducer called, answer edited", action);
-      const stateCopy = { ...state, toBeSaved: true }
+      const stateCopy = { ...state, saveRequired: true }
       // kokeile viimeisiin sulkeisiin [action.payload.index]:
       stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers[action.payload.answerIndex].contents = action.payload.contents
       return stateCopy
     }
     
+/* How to delete answer, question or exam?
+
+    case 'DELETE_EXAM': {
+
+    }    
+
+    case 'DELETE_QUESTION': {
+      return {
+        ...state,
+        exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
+          ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
+        } : exam)),
+        saveRequired: true
+      }
+    }
+
+    case 'DELETE_ANSWER': {
+      
+    } */
+
     // This case added:
     case 'ADD_EXAM': {
       console.log("Reducer called, exam added", action);
-      return {...state, exams:[...state.exams, {title: "default title", questions:[]}], toBeSaved:true}
+      return {...state, exams:[...state.exams, {title: "Anna tentin otsikko", questions:[]}], saveRequired:true}
     }
 
-    // TODO: case 'ADD_ANSWER' and case 'ADD_QUESTION'
+    // TODO: case 'ADD_QUESTION'
 
-    // This case added:
-    case 'UPDATE_SAVE_MODE':
-      return {...state, toBeSaved: action.payload}
+    case 'ADD_ANSWER': {
+/*       the below code generates two answers at a time, used JSON.parse instead
+      const stateCopy = {...state}
+      stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Anna vastausvaihtoehto"})
+      return stateCopy */
+      console.log("Reducer called, answer added", action)
+      const stateCopy = JSON.parse(JSON.stringify(state))
+      stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Anna vastausvaihtoehto"})
+      return stateCopy
+    }
+
+    case 'UPDATE_SAVE_STATUS':
+      return {...state, saveRequired: action.payload}
+
+    case 'SAVING_DATA':
+      return {...state, dataSaved: action.payload}
       
-    // This case added:
     case 'INITIALIZE_DATA':
       return {...action.payload, initialized: true}
         
@@ -119,11 +161,38 @@ function reducer(state,action) {
 }
       
 function App() {
-        
   const [appData, dispatch] = useReducer(reducer, applicationData);
         
-  // This version employs useEffect Hooks:
   useEffect(() => {
+    const getData = async () => {
+      const result = await axios('http://localhost:8080');
+      console.log("result: ", result)
+      dispatch({ type: "INITIALIZE_DATA", payload: result.data.data })
+    }
+    getData()
+  }, [])
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        const result = await axios.post('http://localhost:8080', {
+          data: appData
+        })
+        dispatch({ type: "UPDATE_SAVE_STATUS", payload: false })
+      } catch (error) {
+        console.log("An error occurred:", error)
+      }
+    }
+    if (appData.saveRequired == true) {
+      saveData()
+    }
+  }, [appData.saveRequired])
+  
+  
+/// LOCAL STORAGE USEeFFECTS COMMENTED OUT, BECAUSE WE ARE TRYING TO SAVE DATA TO SERVER AND A FILE (examdata.json)  
+
+  // This version employs useEffect Hooks:
+/*   useEffect(() => {
     let examData = localStorage.getItem('examData');
     if (examData == null) {
       console.log("data from default")
@@ -136,25 +205,51 @@ function App() {
   }, []);
         
   useEffect(() => {
-    if (appData.toBeSaved == true) {
+    let timerID;
+    console.log(timerID)
+    if (appData.saveRequired == true) {      
+      dispatch({type: "UPDATE_SAVE_STATUS", payload: false})
+      if (timerID) {
+        console.log("Ajastin tyhjennettiin?")
+        clearTimeout(timerID)
+      }       
       console.log("saving exam name")
       console.log("exam:", appData)
-            
-      localStorage.setItem('examData', JSON.stringify(appData));
-      dispatch({type: "UPDATE_SAVE_MODE", payload: false})
+      dispatch({type: "SAVING_DATA", payload: false})
+      // Adding a timer to delay saving data + creating a variable for the timer's ID:
+      
+        timerID = setTimeout(() => {
+          console.log("ollaan setTimeoutin sisällä")
+          dispatch({type: "SAVING_DATA", payload: true})
+          localStorage.setItem('examData', JSON.stringify(appData));
+          console.log("timerID:", timerID)
+        }, 5000)
+      
+      console.log("timerID:", timerID)
     }
-  }, [appData.toBeSaved]);
+    // Added clearTimeout here as well:
+    return () => clearTimeout(timerID)
+  }, [appData.saveRequired]); */
   
-  console.log("HUOMIO", appData.exams, appData.initialized)
+// console.log("HUOMIO", appData.exams, appData.initialized)
 
   return (
     <div>
       <Header />
       <main>
+      <nav className ="exams">
+        <ul className="exam-items">
+{/*  TODO: Replace with exam id list: */}
+          <li><button id="big-button">Tentti 1</button></li>
+          <li><button id="big-button">Tentti 2</button></li>
+          <li><button id="big-button">Tentti 3</button></li>
+        </ul>
+      </nav>
 {/* OLD VERSION: <Exam exam = {exam} answerChanged={answerChanged} examRenamed = {examRenamed}/> */}
 {/* PREVIOUS VERSION: <Exam exam={exam} dispatch={dispatch} /> */}
         {appData.initialized && appData.exams.map((exam, index) => <Exam examIndex={index} exam={exam} dispatch={dispatch} />)}
-        <button onClick={() => dispatch({ type: 'ADD_EXAM' })}>Lisää uusi tentti</button>
+        <button id="big-button" onClick={() => dispatch({ type: 'ADD_EXAM' })}>Lisää uusi tentti</button>
+      {appData.dataSaved && <AlertBox />}
       </main>
       <Footer />
     </div>
@@ -167,11 +262,11 @@ export default App;
       {let contents1 = action.payload.contents
       let examCopy1 = {...state}
       examCopy1.questions[action.payload.questionIndex].contents = contents1
-      examCopy1.toBeSaved=true
+      examCopy1.saveRequired=true
       return examCopy1}
    PREVIOUS VERSION, switch case ANSWER_EDITED:   
       {let contents2 = action.payload.contents
       let examCopy2 = {...state}
       examCopy2.questions[action.payload.questionIndex].answers[action.payload.answerIndex].contents = contents2
-      examCopy2.toBeSaved=true
+      examCopy2.saveRequired=true
       return examCopy2} */
