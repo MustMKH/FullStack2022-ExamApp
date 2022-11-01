@@ -1,15 +1,15 @@
 # Tenttisovellus
 
-Keskeneräinen tenttisovellus
+Tämä projekti on vielä keskeneräinen.
 
-## Oleelliset tiedostot
+## Viimeisimmät muutokset tehty tiedostoihin
 
-'App.js', 'Exam.js', 'Question.js', 'Answer.js', 'App.css'
+'examdata.json', 'server.js', 'App.js'
 
 ### Viimeisin muutos
 
-Siirrytään käyttämään useReduceria useStaten sijaan
+Luotu Express palvelin, jossa on 'get' ja 'post' toiminnot tiedon hakua ja tallennusta varten.
 
 ### Kuva keskeneräisestä projektista:
 
-![Tenttisovellus](https://user-images.githubusercontent.com/114909607/196429743-9faa5442-ecb3-42e3-9be0-f456fca998fb.png)
+![Näyttökuva (77)](https://user-images.githubusercontent.com/114909607/198326914-17c83c5f-7b1b-434f-9f65-bddc83425d95.png)
