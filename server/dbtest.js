@@ -47,7 +47,7 @@ const addLanguage = async (title, usage, skills) => {
     }
 }
 
-// The function above accepts all the variable types tested below:
+// The function above accepts all the data types tested below:
 // addLanguage('HTML/CSS', '62.4', 'true')
 // addLanguage("SQL","56.9","true")
 // addLanguage("Python", 41.6, true)
@@ -66,7 +66,7 @@ const removeLanguage = async (id) => {
     }
 }
 
-// The function above accepts both variable types tested below:
+// The function above accepts both data types tested below:
 // removeLanguage(1)
 // removeLanguage("2")
 
@@ -83,7 +83,7 @@ const modifyLanguageTitle = async (title, id) => {
     }
 }
 
-// The function above accepts all the variable types tested below:
+// The function above accepts all the data types tested below:
 // modifyLanguageTitle('FirstTest', 3)
 // modifyLanguageTitle("SecondTest", "4")
 // modifyLanguageTitle('ThirdTest', '5')
