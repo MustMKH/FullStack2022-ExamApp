@@ -5,7 +5,7 @@ const records = require('./records')
 
 // - - - Middleware - - -
 
-// async handler
+// Async handler
 function asyncHandler(cb) {
     return async (req, res, next) => {
         try {
@@ -16,36 +16,34 @@ function asyncHandler(cb) {
     }
 }
 
-// Toimii!
+// - - - Test - - -
 router.get('/health', asyncHandler (async (req, res) => {
     res.send("ok")
 }))
 
-/* - - - ROUTE HANDLERS - - -
-??? Is the full path required? '/exams/questions/answerOptions' or just '/answerOptions'?*/
+// - - - ROUTE HANDLERS - - -
 
 // - - - Get list of items - - -
 
-// get list of users
+// Get list of users
 router.get('/users', asyncHandler (async (req,res) => {
-//    const users = await records.getUsers()
-//    res.json(users)
-    res.send("Trallallaa!")
+    const users = await records.getUsers()
+    res.json(users)
 }))
 
-// get list of exams
+// Get list of exams
 router.get('/exams', asyncHandler (async (req, res) => {
     const exams = await records.getExams()
     res.json(exams)
 }))
 
-// get list of questions
+// Get list of questions
 router.get('/questions', asyncHandler (async (req, res) => {
     const questions = await records.getQuestions()
     res.json(questions)
 }))
 
-// get list of answer options
+// Get list of answer options
 router.get('/answerOptions', asyncHandler (async (req, res) => {
     const answers = await records.getAnswerOptions()
     res.json(answers)
@@ -53,11 +51,10 @@ router.get('/answerOptions', asyncHandler (async (req, res) => {
 
 // - - - Get specific item - - -
 
-// get a specific user
-
+// Get specific user
 router.get('/users/:id', asyncHandler (async (req, res) => {
     const user = await records.getUser(req.params.id)
-    console.log(user)
+    // console.log(user)
     if (user) {
         res.json(user)
     } else {
@@ -65,10 +62,10 @@ router.get('/users/:id', asyncHandler (async (req, res) => {
     }
 }))
 
-// get a specific exam
-
-router.get('exams/:id', asyncHandler (async (req,res) => {
-    const exam = await records.getQuestion(req.params.id)
+// Get specific exam
+router.get('/exams/:id', asyncHandler (async (req, res) => {
+    const exam = await records.getExam(req.params.id)
+    // console.log(exam)
     if (exam) {
         res.json(exam)
     } else {
@@ -76,10 +73,10 @@ router.get('exams/:id', asyncHandler (async (req,res) => {
     }
 }))
 
-// get a specific question
-
-router.get('/questions/:id', asyncHandler (async (req,res) => {
+// Get specific question
+router.get('/questions/:id', asyncHandler (async (req, res) => {
     const question = await records.getQuestion(req.params.id)
+    // console.log(question)
     if (question) {
         res.json(question)
     } else {
@@ -87,9 +84,8 @@ router.get('/questions/:id', asyncHandler (async (req,res) => {
     }
 }))
 
-// get a specific answer option
-
-router.get('/answerOptions/:id', asyncHandler (async (req,res) => {
+// Get specific answer option
+router.get('/answerOptions/:id', asyncHandler (async (req, res) => {
     const answerOption = await records.getAnswerOption(req.params.id)
     if (answerOption) {
         res.json(answerOption)
@@ -100,8 +96,7 @@ router.get('/answerOptions/:id', asyncHandler (async (req,res) => {
 
 // - - - Create new item - - -
 
-// Create a new user
-
+// Create new user
 router.post('/users', asyncHandler (async (req, res) => {
     if (req.body.first_name && req.body.last_name && req.body.e_mail && req.body.password && req.body.is_admin) {
         const user = await records.createUser({
@@ -117,9 +112,11 @@ router.post('/users', asyncHandler (async (req, res) => {
     }
 }))
 
-// create a new exam
-router.post('/', asyncHandler (async (req, res) => {
-    if (req.body.number && req.body.title) {
+// Create new exam
+router.post('/exams', asyncHandler (async (req, res) => {
+    // console.log("routes.js - Ceate new exam - req.body.number:", req.body.number)
+    // console.log("routes.js - Ceate new exam - req.body.title:", req.body.title)
+        if (req.body.number && req.body.title) {
         const exam = await records.createExam({
             number: req.body.number,
             title: req.body.title
@@ -130,35 +127,41 @@ router.post('/', asyncHandler (async (req, res) => {
     }
 }))
 
-// create a new question - the exam id needs to be specified???
-router.post('/:id/questions', asyncHandler (async (req, res) => {
-    if (req.body.number && req.body.title) {
+// Create new question
+router.post('/questions', asyncHandler (async (req, res) => {
+    console.log("routes.js - Ceate new question - req.body.exam_id:", req.body.exam_id)
+    console.log("routes.js - Ceate new question - req.body.number:", req.body.number)
+    console.log("routes.js - Ceate new question - req.body.contents:", req.body.contents)
+    if (req.body.exam_id && req.body.number && req.body.contents) {
         const question = await records.createQuestion({
+            exam_id: req.body.exam_id,
             number: req.body.number,
             contents: req.body.contents
         })
-        res.status(201).json(exam)
+        res.status(201).json(question)
     } else {
-        res.status(400).json( {message: "Missing question number or contents"} )
+        res.status(400).json( {message: "Missing required information"} )
     }
 }))
 
-// create a new answer option - the question id needs to be specified???
-router.post('/questions/:id/answerOptions', asyncHandler (async (req, res) => {
-    if (req.body.number && req.body.title) {
+// Create new answer option
+router.post('/answerOptions', asyncHandler (async (req, res) => {
+    if (req.body.question_id && req.body.number && req.body.contents && req.body.is_correct) {
         const answerOption = await records.createAnswerOption({
+            question_id: req.body.question_id,
             number: req.body.number,
-            contents: req.body.contents
+            contents: req.body.contents,
+            is_correct: req.body.is_correct
         })
-        res.status(201).json(exam)
+        res.status(201).json(answerOption)
     } else {
-        res.status(400).json( {message: "Missing answer option number or contents"} )
+        res.status(400).json( {message: "Missing required information"} )
     }
 }))
 
 // - - - Update item - - -
 
-// update user (name and e-mail)
+// Update user (name and e-mail) !!!
 
 router.put('/users/:id', asyncHandler(async (req, res) => {
     const user = await records.getUser(req.params.id)
@@ -172,7 +175,7 @@ router.put('/users/:id', asyncHandler(async (req, res) => {
     }
 }))
 
-// update exam
+// Update exam !!!
 
 router.put('/:id', asyncHandler(async (req, res) => {
     const exam = await records.getExam(req.params.id)
@@ -183,7 +186,7 @@ router.put('/:id', asyncHandler(async (req, res) => {
         /* For a put request, it is convention to send in the status code 204, which means no content
         This means that everything went OK but there is nothing to send back
         We need another way to end the request or the server will just hang indefinitely
-        and our application will appear to be broken. For this reason, we need to use the express 
+        and our application will appear to be broken. For this reason, we need to use the express
         end() method: */
         res.status(204).end()
     } else {
@@ -192,7 +195,7 @@ router.put('/:id', asyncHandler(async (req, res) => {
     records.updateExam()
 }))
 
-// update question
+// Update question !!!
 
 router.put('/questions/:id', asyncHandler(async (req, res) => {
     const question = await records.getQuestion(req.params.id)
@@ -207,7 +210,7 @@ router.put('/questions/:id', asyncHandler(async (req, res) => {
     records.updateQuestion()
 }))
 
-// update answer option
+// Update answer option !!!
 
 router.put('/answerOptions/:id', asyncHandler(async (req, res) => {
     const answerOption = await records.getAnswerOption(req.params.id)
@@ -224,7 +227,7 @@ router.put('/answerOptions/:id', asyncHandler(async (req, res) => {
 
 // - - - Delete item - - -
 
-// delete user
+// Delete user !!!
 
 router.delete('/users/:id', asyncHandler(async (req, res, next) => {
     const user = await records.getUser(req.params.id)
@@ -236,7 +239,7 @@ router.delete('/users/:id', asyncHandler(async (req, res, next) => {
     }
 }))
 
-// delete exam
+// Delete exam !!!
 
 router.delete('/:id', asyncHandler(async (req, res, next) => {
     const exam = await records.getExam(req.params.id)
@@ -249,7 +252,7 @@ router.delete('/:id', asyncHandler(async (req, res, next) => {
     }
 }))
 
-// delete question
+// Delete question !!!
 
 router.delete('/questions/:id', asyncHandler(async (req, res, next) => {
     const question = await records.getQuestion(req.params.id)
@@ -261,7 +264,7 @@ router.delete('/questions/:id', asyncHandler(async (req, res, next) => {
     }
 }))
 
-// delete answer option
+// Delete answer option !!!
 
 router.delete('/answerOptions/:id', asyncHandler(async (req, res, next) => {
     const answerOption = await records.getAnswerOption(req.params.id)
@@ -273,5 +276,5 @@ router.delete('/answerOptions/:id', asyncHandler(async (req, res, next) => {
     }
 }))
 
-// - - - EXPORTING THE ROUTER - - - 
+// - - - EXPORTING THE ROUTER - - -
 module.exports = router;

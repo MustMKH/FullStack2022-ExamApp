@@ -31,7 +31,7 @@ app.use('/api', router)
 
 // - - - GLOBAL ERROR HANDLING - - -
 
-/* app.use((req, res, next) => {
+app.use((req, res, next) => {
     const err = new Error("Not Found")
     err.status = 404
     next(err)
@@ -44,6 +44,6 @@ app.use((err, req, res, next) => {
             message: err.message
         }
     })
-}) */
+})
 
 app.listen(port, () => console.log(`Exam API listening on port ${port}.`))
