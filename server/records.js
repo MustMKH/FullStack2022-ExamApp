@@ -8,8 +8,7 @@ const pool = new Pool({
     port: 5432,
 })
 
-// TODO: CHANGE ALL PARAMETERS
-// TODO: ADD RETURN STATEMENTS TO ALL FUNCTIONS
+// TODO: FIND "!!!" (params and return statements)
 // TODO: SEPARATE FILES FOR USERS, EXAMS, QUESTIONS AND ANSWERS!!!
 
 /* ??? Removed all pool.end()s because:
