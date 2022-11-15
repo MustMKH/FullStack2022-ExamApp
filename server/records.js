@@ -8,17 +8,25 @@ const pool = new Pool({
     port: 5432,
 })
 
-// TODO: FIND "!!!" (params and return statements)
-// TODO: SEPARATE FILES FOR USERS, EXAMS, QUESTIONS AND ANSWERS!!!
+// TODO: Calculate and record answer_option and exam result
 
-/* ??? Removed all pool.end()s because:
-Error: Called end on pool more than once
-    at BoundPool.end (C:\Users\musto\OneDrive\Tiedostot\Ohjelmointi\ReactApps\tenttisovellus\node_modules\pg-pool\index.js:434:19)
-    at Object.getExams (C:\Users\musto\OneDrive\Tiedostot\Ohjelmointi\ReactApps\tenttisovellus\server\records.js:45:10)
-    at processTicksAndRejections (node:internal/process/task_queues:96:5)
-    at async C:\Users\musto\OneDrive\Tiedostot\Ohjelmointi\ReactApps\tenttisovellus\server\routes.js:36:19
-    at async C:\Users\musto\OneDrive\Tiedostot\Ohjelmointi\ReactApps\tenttisovellus\server\routes.js:12:13
-[nodemon] app crashed - waiting for file changes before starting...*/
+/* TODO: It is currently not possible to delete an exam with questions or
+         a question with answer options. The DELETE request returns status
+         204 No Content as if everything went ok, this needs to be fixed */
+
+// TODO: SEPARATE FILES FOR USERS, EXAMS, QUESTIONS AND ANSWERS
+
+/* TODO: Bad Request Status and Error Handling for inputs that are too long
+         For example, the exam title is limited to 50 characters */
+
+/* TODO: SQL UPDATE statements return 0 if the row is not found!
+         Check to see if an item exists in the database can be done here
+         in the try block OR Test if row count is > 0 */
+
+/* TODO: Pool.end()?
+         The following error message was received when the same route handler
+         called two query functions:
+         Error: Called end on pool more than once */
 
 /* ??? Can the records be stored both to db and json file?
 let data = fs.readFileSync('./examdata.json', { encoding: 'utf8', flag: 'r' }) */
@@ -78,7 +86,9 @@ const getUser = async (id) => {
     const text = `SELECT id, first_name, last_name, e_mail FROM user_data WHERE id = ${id}`
     try {
         const result = await pool.query(text)
-        return result.rows
+        // console.log("RESULT.ROWS:", result.rows[0]) // returns undefined
+        // console.log("RESULT.ROWS:", result.rows) // this is an empty list
+        return result.rows[0]
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
@@ -90,7 +100,7 @@ const getExam = async (id) => {
     const text = `SELECT * FROM exam WHERE id = ${id}`
     try {
         const result = await pool.query(text)
-        return result.rows
+        return result.rows[0]
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
@@ -102,7 +112,8 @@ const getQuestion = async (id) => {
     const text = `SELECT * FROM question WHERE id = ${id}`
     try {
         const result = await pool.query(text)
-        return result.rows
+        // list length can be tested here: result.rowcount
+        return result.rows[0]
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
@@ -113,7 +124,7 @@ const getAnswerOption = async (id) => {
     const text = `SELECT * FROM answer_option WHERE id = ${id}`
     try {
         const result = await pool.query(text)
-        return result.rows
+        return result.rows[0]
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
@@ -130,11 +141,11 @@ const createUser = async (params) => {
 }
 
 // Create new exam
-const createExam = async (oiskoNääVaikParams) => {
-    // console.log("records.js createExam params.number and params.title =", oiskoNääVaikParams.number, oiskoNääVaikParams.title)
+const createExam = async (params) => {
+    // console.log("records.js createExam params.number and params.title =", params.number, params.title)
     try {
         const text = 'INSERT INTO exam (number, title) VALUES ($1, $2)'
-        const values = [oiskoNääVaikParams.number, oiskoNääVaikParams.title]
+        const values = [params.number, params.title]
         const result = await pool.query(text, values)
         // No need for return? return result.rows[0] or RETURNING * ???
     } catch (error) {
@@ -167,88 +178,92 @@ const createAnswerOption = async (params) => {
     }
 }
 
-// updateUser !!!
-
-const updateUser = async (req, res) => {
+// Update user (name and e-mail)
+const updateUser = async (id, first_name, last_name, e_mail) => {
     try {
-        const text = (`UPDATE user_data SET first_name = '${req.body.first_name}', last_name = '${req.body.last_name}', e_mail = '${req.body.e_mail}' WHERE id=${req.body.id}`)
+        const text = (`UPDATE user_data SET first_name = '${first_name}', last_name = '${last_name}', e_mail = '${e_mail}' WHERE id=${id}`)
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
+}
+
+// Update exam
+const updateExam = async (examId, examNumber, examTitle) => {
+    const text = `UPDATE exam SET number = '${examNumber}', title = '${examTitle}' WHERE id=${examId}`
+/*     console.log("records.js, updateExam, parametri examId =", examId)
+    console.log("records.js, updateExam, parametri examNumber =", examNumber)
+    console.log("records.js, updateExam, parametri examTitle =", examTitle)
+    console.log("records.js, updateExam, text =", text) */
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error", error)
+    }
+}
+
+// Update question
+const updateQuestion = async (id, number, contents) => {
+    const text = `UPDATE question SET number = '${number}', contents = '${contents}' WHERE id=${id}`
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error", error)
+    }
+}
+
+// Update answer option
+const updateAnswerOption = async (id, number, contents, is_correct) => {
+    console.log("records.js, updateAnswerOption id =", id)
+    console.log("records.js, updateAnswerOption number =", number)
+    console.log("records.js, updateAnswerOption contents =", contents)
+    console.log("records.js, updateAnswerOption is_correct =", is_correct)
+    const text = (`UPDATE answer_option SET number = '${number}', contents = '${contents}', is_correct = '${is_correct}' WHERE id=${id}`)
+/*     const text = 'UPDATE answer_option SET (number, contents, is_correct) VALUES ($1, $2, $3) WHERE id=3'
+    const values = [params.number, params.contents, params.is_correct] */
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
+}
+
+// Delete user
+const deleteUser = async (kukkuluuruu) => {
+    console.log ("records.js deleteUser parameter kukkuluuruu =", kukkuluuruu)
+    const text = `DELETE FROM user_data WHERE id=${kukkuluuruu}`
+    try {
         const result = await pool.query(text)
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
 }
 
-// updateExam !!!
-
-const updateExam = async (req, res) => {
+// Delete exam
+const deleteExam = async (id) => {
+    console.log ("records.js deleteExam parameter id =", id)
+    const text = `DELETE FROM exam WHERE id=${id}`
     try {
-        const text = (`UPDATE exam SET number = '${req.body.number}', title = '${req.body.title}' WHERE id=${req.body.id}`)
         const result = await pool.query(text)
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
 }
 
-// updateQuestion !!!
-
-const updateQuestion = async (req, res) => {
+// Delete question
+const deleteQuestion = async (idFromRequest) => {
+    const text = (`DELETE FROM question WHERE id=${idFromRequest}`)
     try {
-        const text = (`UPDATE question SET number = '${req.body.number}', contents = '${req.body.contents}' WHERE id=${req.body.id}`)
         const result = await pool.query(text)
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
 }
 
-// updateAnswerOption !!!
-
-const updateAnswerOption = async (req, res) => {
+// Delete answer option
+const deleteAnswerOption = async (answerOptionId) => {
+    const text = (`DELETE FROM answer_option WHERE id=${answerOptionId}`)
     try {
-        const text = (`UPDATE answer_option SET number = '${req.body.number}', contents = '${req.body.contents}' WHERE id=${req.body.id}`)
-        const result = await pool.query(text)
-    } catch (error) {
-        console.log("There was an error:", error.stack)
-    }
-}
-
-// deleteUser !!!
-
-const deleteUser = async (req, res) => {
-    try {
-        const text = (`DELETE FROM user_data WHERE id=${req.body.id}`)
-        const result = await pool.query(text)
-    } catch (error) {
-        console.log("There was an error:", error.stack)
-    }
-}
-
-// deleteExam !!!
-
-const deleteExam = async (req, res) => {
-    try {
-        const text = (`DELETE FROM exam WHERE id=${req.body.id}`)
-        const result = await pool.query(text)
-    } catch (error) {
-        console.log("There was an error:", error.stack)
-    }
-}
-
-// deleteQuestion !!!
-
-const deleteQuestion = async (req, res) => {
-    try {
-        const text = (`DELETE FROM question WHERE id=${req.body.id}`)
-        const result = await pool.query(text)
-    } catch (error) {
-        console.log("There was an error:", error.stack)
-    }
-}
-
-// deleteAnswerOption !!!
-
-const deleteAnswerOption = async (req, res) => {
-    try {
-        const text = (`DELETE FROM answer_option WHERE id=${req.body.id}`)
         const result = await pool.query(text)
     } catch (error) {
         console.log("There was an error:", error.stack)

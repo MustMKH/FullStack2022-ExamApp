@@ -2,6 +2,10 @@ const express = require('express')
 const router = express.Router()
 const records = require('./records')
 
+// TODO: paths, for example '/exams/1/questions/1/answers/1
+
+/* TODO: remove if statements that check if an item is found. This
+should be checked in the query handlers instead (see note in records.js) */
 
 // - - - Middleware - - -
 
@@ -44,7 +48,7 @@ router.get('/questions', asyncHandler (async (req, res) => {
 }))
 
 // Get list of answer options
-router.get('/answerOptions', asyncHandler (async (req, res) => {
+router.get('/answer_options', asyncHandler (async (req, res) => {
     const answers = await records.getAnswerOptions()
     res.json(answers)
 }))
@@ -55,6 +59,7 @@ router.get('/answerOptions', asyncHandler (async (req, res) => {
 router.get('/users/:id', asyncHandler (async (req, res) => {
     const user = await records.getUser(req.params.id)
     // console.log(user)
+    // test if the list is empty: user.length
     if (user) {
         res.json(user)
     } else {
@@ -85,7 +90,7 @@ router.get('/questions/:id', asyncHandler (async (req, res) => {
 }))
 
 // Get specific answer option
-router.get('/answerOptions/:id', asyncHandler (async (req, res) => {
+router.get('/answer_options/:id', asyncHandler (async (req, res) => {
     const answerOption = await records.getAnswerOption(req.params.id)
     if (answerOption) {
         res.json(answerOption)
@@ -145,7 +150,7 @@ router.post('/questions', asyncHandler (async (req, res) => {
 }))
 
 // Create new answer option
-router.post('/answerOptions', asyncHandler (async (req, res) => {
+router.post('/answer_options', asyncHandler (async (req, res) => {
     if (req.body.question_id && req.body.number && req.body.contents && req.body.is_correct) {
         const answerOption = await records.createAnswerOption({
             question_id: req.body.question_id,
@@ -161,28 +166,23 @@ router.post('/answerOptions', asyncHandler (async (req, res) => {
 
 // - - - Update item - - -
 
-// Update user (name and e-mail) !!!
-
+// Update user (name and e-mail)
 router.put('/users/:id', asyncHandler(async (req, res) => {
     const user = await records.getUser(req.params.id)
     if (user) {
-            user.first_name = req.body.first_name
-            user.last_name = req.body.last_name
-            user.e_mail = req.body.e_mail
-            await records.updateUser(user)
+        await records.updateUser(req.params.id, req.body.first_name, req.body.last_name, req.body.e_mail)
     } else {
         res.status(404).json( {message: "User not found"} )
     }
 }))
 
-// Update exam !!!
-
-router.put('/:id', asyncHandler(async (req, res) => {
+// Update exam
+router.put('/exams/:id', asyncHandler(async (req, res, next) => {
     const exam = await records.getExam(req.params.id)
+    console.log("routes.js, router.put, 'exams/:id', req.params.id =", req.params.id)
+    console.log("routes.js, router.put, 'exams/:id', exam =", exam)
     if (exam) {
-        exam.number = req.body.number
-        exam.title = req.body.title
-        await records.updateExam(exam)
+        await records.updateExam(req.params.id, req.body.number, req.body.title)
         /* For a put request, it is convention to send in the status code 204, which means no content
         This means that everything went OK but there is nothing to send back
         We need another way to end the request or the server will just hang indefinitely
@@ -192,84 +192,87 @@ router.put('/:id', asyncHandler(async (req, res) => {
     } else {
         res.status(404).json( {message: "Exam not found"} )
     }
-    records.updateExam()
 }))
 
-// Update question !!!
-
+// Update question
 router.put('/questions/:id', asyncHandler(async (req, res) => {
     const question = await records.getQuestion(req.params.id)
+    console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
+    console.log("routes.js, router.put, 'questions/:id', req.body.number =", req.body.number)
+    console.log("routes.js, router.put, 'questions/:id', req.body.contents =", req.body.contents)
     if (question) {
-        question.number = req.body.number
-        question.contents = req.body.contents
-        await records.updateQuestion(question)
+        await records.updateQuestion(req.params.id, req.body.number, req.body.contents)
         res.status(204).end()
     } else {
         res.status(404).json( {message: "Question not found"} )
     }
-    records.updateQuestion()
 }))
 
-// Update answer option !!!
-
-router.put('/answerOptions/:id', asyncHandler(async (req, res) => {
+// Update answer option
+router.put('/answer_options/:id', asyncHandler(async (req, res) => {
     const answerOption = await records.getAnswerOption(req.params.id)
+    console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
+    console.log("routes.js, router.put, 'questions/:id', req.body.number =", req.body.number)
+    console.log("routes.js, router.put, 'questions/:id', req.body.contents =", req.body.contents)
+    console.log("routes.js, router.put, 'questions/:id', req.body.is_correct =", req.body.is_correct)
+    // console.log(req.body)
     if (answerOption) {
-        answerOption.number = req.body.number
-        answerOption.contents = req.body.contents
-        await records.updateAnswerOption(answerOption)
+    // this does not work: if (answerOption && req.body.number && req.body.contents && req.body.is_correct) {
+        await records.updateAnswerOption(req.params.id, req.body.number, req.body.contents, req.body.is_correct)
         res.status(204).end()
     } else {
         res.status(404).json( {message: "Answer option not found"} )
     }
-    records.updateAnswerOption()
 }))
 
 // - - - Delete item - - -
 
-// Delete user !!!
-
+// Delete user
 router.delete('/users/:id', asyncHandler(async (req, res, next) => {
     const user = await records.getUser(req.params.id)
+    console.log("routes.js, router.delete, '/users/:id', req.params.id=", req.params.id)
+    console.log("routes.js, router.delete, '/users/:id', user=", user)
+    console.log("routes.js, router.delete, '/users/:id', user.id=", user.id)
     if (user) {
-        await records.deleteUser(user)
+        await records.deleteUser(user.id)
+        // because we're only sending back a status and no response, we need to use the end() method:
         res.status(204).end()
     } else {
         res.status(404).json( {message: "User not found"} )
     }
 }))
 
-// Delete exam !!!
-
-router.delete('/:id', asyncHandler(async (req, res, next) => {
+// Delete exam
+router.delete('/exams/:id', asyncHandler(async (req, res, next) => {
     const exam = await records.getExam(req.params.id)
+    console.log("routes.js, router.delete, '/exams/:id', req.params.id=", req.params.id)
+    console.log("routes.js, router.delete, '/exams/:id', exam=", exam)
+    console.log("routes.js, router.delete, '/exams/:id', exam.id=", exam.id)
     if (exam) {
-        await records.deleteExam(exam)
-        // because we're only sending back a status and no response, we need to use the end() method:
+        // const id = req.body.id
+        await records.deleteExam(exam.id)
         res.status(204).end()
     } else {
         res.status(404).json( {message: "Exam not found"} )
     }
 }))
 
-// Delete question !!!
-
+// Delete question
 router.delete('/questions/:id', asyncHandler(async (req, res, next) => {
     const question = await records.getQuestion(req.params.id)
     if (question) {
-        await records.deleteQuestion(question)
+        await records.deleteQuestion(question.id)
         res.status(204).end()
     } else {
         res.status(404).json( {message: "Question not found"} )
     }
 }))
 
-// Delete answer option !!!
-
-router.delete('/answerOptions/:id', asyncHandler(async (req, res, next) => {
+// Delete answer option
+router.delete('/answer_options/:id', asyncHandler(async (req, res, next) => {
     const answerOption = await records.getAnswerOption(req.params.id)
     if (answerOption) {
-        await records.deleteAnswerOption(answerOption)
+        await records.deleteAnswerOption(answerOption.id)
         res.status(204).end()
     } else {
         res.status(404).json( {message: "Answer option not found"} )
