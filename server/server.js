@@ -14,6 +14,8 @@ const pool = new Pool({
     port: 5432,
 }) */
 
+
+
 // - - - M I D D L E W A R E - - -
 
 // This middleware tells express that we are expecting requests to come in as json
@@ -26,8 +28,12 @@ app.use(express.json())
 // When the request starts with the path /api, use the routes inside of the routes.js file
 app.use('/api', router)
 
-// - - - DATA - - -
+
+
+// - - - DATA FROM FILE - - -
 // let data = fs.readFileSync('./examdata.json', { encoding: 'utf8', flag: 'r' })
+
+
 
 // - - - GLOBAL ERROR HANDLING - - -
 
