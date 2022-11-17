@@ -1,12 +1,18 @@
 const express = require('express')
 const router = express.Router()
 const queries = require('./queries')
-const verifyToken = require('.verifyToken')
+// const verifyToken = require('./verifyToken')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
-// TODO: paths, for example '/exams/1/questions/1/answers/1
+/* TODO: verifyToken can be used as middleware for all functions that require
+         verification: router.use(verifyToken). This can be placed after the
+         functions that do not require auth */
+
+// TODO: user email as primary key? if not, at least add unique constraint!
+
+// TODO: paths, for example '/exams/1/questions/1/answer_options/1
 
 /* TODO: remove if statements that check if an item is found. This
 should be checked in the query handlers instead (see note in queries.js) */
@@ -30,25 +36,22 @@ router.get('/health', asyncHandler (async (req, res) => {
 }))
 
 
-// - - - AUTHENTICATION - - -
+// - - - SIGNUP - - -
 
-/* let password = "12345"
-let email = "erkki@esimerkki.net" */
-
-// Handling post request for signup
 router.post('/signup', async (req, res, next) => {
     const { email, password } = req.body
     let result
     try {
         let hashed = await bcrypt.hash(password, saltRounds)
-        result = await pool.query("INSERT INTO user_data (email, password) VALUES ($1, $2) returning id", [email, hashed]) // queries.js: signUp !!!
+        result = await queries.signUp(email, hashed)
+        console.log("routes.js, router.post, '/signup', result =", result)
     } catch (error) {
         return next(error)
     }
     let token
     try {
         token = jwt.sign(
-            { userId: result.rows[0].id, email: email },
+            { userId: result, email: email },
             "secretkeyappearshere",
             { expiresIn: "1h" }
         )
@@ -60,19 +63,18 @@ router.post('/signup', async (req, res, next) => {
         .status(201)
         .json({
             success: true,
-            data: { userId: result.rows[0].id, email: email, token: token }
+            data: { userId: result, email: email, token: token }
         })
 })
 
-// Handling post request for login
+// - - - LOGIN - - -
+
 router.post('/login', async (req, res, next) => {
     let { email, password } = req.body
-
     let existingUser
-    // let passwordMatch = false
+    // let passwordMatch = false (this is not necessary)
     try {
-        let result = await pool.query ("SELECT * FROM user_data WHERE email = $1", [email]) // queries.js: login !!!
-        existingUser = { password: result.rows[0].password, email: result.rows[0].email, id: result.rows[0].id }
+        existingUser = await queries.login(email)
         passwordMatch = await bcrypt.compare(password, existingUser.password)
     } catch (error) {
         const errMsg = new Error("Error! Something went wrong.")
@@ -85,10 +87,10 @@ router.post('/login', async (req, res, next) => {
     }
     let token
     try {
-        // Creating jwt token
+        // Creating jwt token (it has 3 parts: 1. header 2. payload, expiration 3. signature)
         token = jwt.sign(
-            { userId: existingUser.id, email: existingUser.email },
-            "secretkeyappearshere",
+            { userId: existingUser.id, email: existingUser.email }, // = payload
+            "secretkeyappearshere", // dotenv: recommended, store passwords in a separate file
             { expiresIn: "1h" }
         )
     } catch (error) {
@@ -99,6 +101,7 @@ router.post('/login', async (req, res, next) => {
 
     res
         .status(200)
+        // .json adds the necessary styling (quotes) to the object
         .json({
             success: true,
             data: {
@@ -108,6 +111,23 @@ router.post('/login', async (req, res, next) => {
             }
         })
 })
+
+
+
+//- - - VERIFY TOKEN - - -
+
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    // Authorization: 'Bearer TOKEN'
+    if(!token) { res.status(200).json({ success: false, message: "Error! Token was not provided." }) }
+    // Decoding the token
+    const decodedToken = jwt.verify(token, "secretkeyappearshere")
+    req.decoded = decodedToken
+    /* next() with no arguments says "just kidding, I don't actual want to handle this". It goes back in
+    and tries to find the next route that would match. In other words, if a route is found, it is rendered.
+    If one isn't found, this route handler is ignored and the program moves on to other ones. */
+    next()
+}
 
 router.use(verifyToken)
 
@@ -131,16 +151,38 @@ router.get('/exams', asyncHandler (async (req, res) => {
     res.json(exams)
 }))
 
-// Get list of questions
+// Get list of all questions
 router.get('/questions', asyncHandler (async (req, res) => {
     const questions = await queries.getQuestions()
     res.json(questions)
 }))
 
-// Get list of answer options
+// Get list of all answer options
 router.get('/answer_options', asyncHandler (async (req, res) => {
-    const answers = await queries.getAnswerOptions()
-    res.json(answers)
+    const answerOptions = await queries.getAnswerOptions()
+    res.json(answerOptions)
+}))
+
+// - - - Get questions under specific exam - - -
+
+router.get('/exams/:exam_id/questions', asyncHandler (async (req, res) => {
+    const questions = await queries.getQuestionsForExam(req.params.exam_id)
+    if (questions.length > 0) {
+        res.json(questions)
+    } else {
+        res.status(404).json( {message: "No exam found with the provided id."} )
+    }
+}))
+
+// - - - Get answer options under specific question - - -
+
+router.get('/questions/:question_id/answer_options', asyncHandler (async (req, res) => {
+    const answerOptions = await queries.getAnswerOptionsForQuestion(req.params.question_id)
+    if (answerOptions.length > 0) {
+        res.json(answerOptions)
+    } else {
+        res.status(404).json( {message: "No question found with the provided id"} )
+    }
 }))
 
 // - - - Get specific item - - -
@@ -256,11 +298,11 @@ router.post('/answer_options', asyncHandler (async (req, res) => {
 
 // - - - Update item - - -
 
-// Update user (name and e-mail)
+// Update user's first name and last name
 router.put('/users/:id', asyncHandler(async (req, res) => {
     const user = await queries.getUser(req.params.id)
     if (user) {
-        await queries.updateUser(req.params.id, req.body.first_name, req.body.last_name, req.body.email)
+        await queries.updateUser(req.params.id, req.body.first_name, req.body.last_name)
     } else {
         res.status(404).json( {message: "User not found"} )
     }
