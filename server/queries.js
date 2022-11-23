@@ -11,11 +11,9 @@ const pool = new Pool({
 /* NOTE: http request for login and signup:
          Make sure Content-type is application/json in the Header section */
 
-// ??? Why does update user request never load on postman? Other updates have no problems
-
 // TODO: Calculate and record answer_option and exam result
 
-// TODO: SEPARATE FILES FOR USERS, EXAMS, QUESTIONS AND ANSWERS
+// TODO: Separate files for users, exams, questions and answer options
 
 /* TODO: Bad Request Status and Error Handling for inputs that are too long
          For example, the exam title is limited to 50 characters */
@@ -57,7 +55,7 @@ const signUp = async (email, hashed) => {
     }
 }
 
-// Login !!!
+// Login
 
 const login = async (email) => {
     const text = 'SELECT * FROM user_data WHERE email = $1'
@@ -70,6 +68,24 @@ const login = async (email) => {
         console.log("There was an error:", error)
     }
 }
+
+
+
+// - - - adminCheck - - -
+const adminCheck = async (email) => {
+    console.log("queries.js, adminCheck, parameter email =", email)
+    const text = 'SELECT is_admin FROM user_data WHERE email = $1'
+    const values = [email]
+    try {
+        const result = await pool.query(text, values)
+        console.log("queries.js, adminCheck, result.rows[0] =", result.rows[0])
+        return result.rows[0].is_admin
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
+}
+
+
 
 // - - - Selects - - -
 
@@ -252,10 +268,10 @@ const createAnswerOption = async (params) => {
          ON CONFLICT (column_name1) DO UPDATE SET column_name2 = EXCLUDED.column_name2;
   */
 
-// Update user's name TODO: update role, email, password (reset) ???
-const updateUser = async (id, first_name, last_name) => {
+// Update user's name and email TODO: update role, password (reset)???
+const updateUser = async (id, first_name, last_name, email) => {
+    const text = (`UPDATE user_data SET first_name = '${first_name}', last_name = '${last_name}', email = '${email}' WHERE id=${id}`)
     try {
-        const text = (`UPDATE user_data SET first_name = '${first_name}', last_name = '${last_name}' WHERE id=${id}`)
         const result = await pool.query(text)
     } catch (error) {
         console.log("There was an error:", error)
@@ -351,6 +367,7 @@ const deleteAnswerOption = async (id) => {
 module.exports = {
     signUp,
     login,
+    adminCheck,
     getUsers,
     getExams,
     getQuestions,

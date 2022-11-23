@@ -1,7 +1,8 @@
 // const bodyparser = require('body-parser')
-// const fs = require('fs')
+const fs = require('fs')
+const https = require('https')
 // const cors = require('cors')
-const port = 8080
+const port = process.env.PORT || 8080
 const express = require('express')
 const app = express()
 const router = require('./routes')
@@ -13,8 +14,6 @@ const pool = new Pool({
     password: 'admin',
     port: 5432,
 }) */
-
-
 
 // - - - M I D D L E W A R E - - -
 
@@ -52,4 +51,24 @@ app.use((err, req, res, next) => {
     })
 })
 
-app.listen(port, () => console.log(`Exam API listening on port ${port}.`))
+/* const options = {
+    key: 'exam-app.key',
+    cert: 'exam-app.crt'
+}
+
+const sslServer=https.createServer(options,app)
+
+sslServer.listen(port, () => {
+    console.log(`Secure API server listening on port ${port}`)
+}) */
+
+https
+    .createServer(
+        {
+            key: fs.readFileSync("exam-app.key"),
+            cert: fs.readFileSync("exam-app.crt")
+        },
+        app
+    ).listen(port, () => console.log(`Exam API listening on port ${port}.`))
+
+/* app.listen(port, () => console.log(`Exam API listening on port ${port}`)) */
