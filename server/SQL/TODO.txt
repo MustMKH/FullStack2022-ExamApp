@@ -1,0 +1,36 @@
+CREATE TABLE user_exam (
+    exam_required BOOL NOT NULL,                                            default false???
+    exam_date DATE,
+    exam_completed BOOL,                                                    default false???
+    time_of_completion DATE,                                                extract time from timestamp???
+	user_id BIGINT REFERENCES user (id),                                    combination ID???
+    exam_id BIGINT REFERENCES exam (id),
+    question_id BIGINT REFERENCES question (id)                             needed???
+	answer_option_id BIGINT REFERENCES answer_option_id (id)                needed???
+    result                                                                  calculation???
+);
+
+CREATE TABLE user_answer (
+    X   id BIGSERIAL NOT NULL PRIMARY KEY,
+    X   option_selected BOOL NOT NULL,                                          default false???
+        answer_option_is_correct BOOL REFERENCES answer_option (is_correct)
+    X   answer_result                                                           match option_selected with answer_option_is_correct???
+	X   user_data_id BIGINT REFERENCES user_data (id)
+    X   exam_id BIGINT REFERENCES exam (id)
+	X   question_id BIGINT REFERENCES question (id)
+	X   answer_option_id BIGINT REFERENCES answer_option_id (id)
+);
+
+- - - ADD COLUMN, EXAMPLE - - -
+
+ALTER TABLE Customers ADD Email varchar(255);
+
+THIS DOES NOT WORK:
+ALTER TABLE user_answer ADD answer_option_is_correct BOOL REFERENCES answer_option (is_correct);
+
+ALTER TABLE user_answer ADD question_id BIGINT REFERENCES question (id) NOT NULL;
+ALTER TABLE user_answer ADD exam_id BIGINT REFERENCES exam (id) NOT NULL;
+
+- - - JOIN, EXAMPLE - - -
+SELECT * FROM person JOIN car ON person.car_id = car.id;
+SELECT person.first_name, car.make, car.model, car.price FROM person JOIN car ON person.car_id = car.id;

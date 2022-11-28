@@ -12,6 +12,8 @@ const saltRounds = 10
 
 // TODO: user email as primary key? if not, at least add unique constraint!
 
+// TODO: get name of logged in user
+
 // TODO: paths, for example '/exams/1/questions/1/answer_options/1
 
 /* TODO: remove if statements that check if an item is found. This

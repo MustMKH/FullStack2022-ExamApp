@@ -1,42 +1,52 @@
+/* FIND !!! */
+
 :root {
-  --primary:  #75daf1;
-  --secondary:  #f6c36c;
+  --primary:  #223e44;
+  --secondary:  #75daf1;
   --dark: #091315;
   --light: #eee;
-} 
+  --highlight:  #f1ec58;
+}
 
-.exams {
-  display: flex;    
-  align-items:center;  
+/* .exams {
+  display: flex;
+  align-items:center;
   height: 50px;
   padding: 15px 15px;
-}
+} */
 
 .exam-items {
   list-style: none;
-  display: flex; 
+  display: flex;
+  padding: 10px;
 }
 
-.exam-items > li {
+/* .exam-items > li {
+  background-color: var(--primary);
   font-size: large;
   margin: 8px;
   padding: 10px;
   outline-color: gray;
   outline-style: auto;
-  color: #eee;
+  color: var(--light);
   font-size: large;
-  font-weight: 700;  
-}
+  font-weight: 600;
+} */
 
 .answers {
   margin-left: 25px;
 }
 
+.answer-title {
+  margin-top: 40px;
+  margin-left: 25px;
+}
+
 .nav {
-  display: flex;    
+  display: flex;
   align-items: center;
   background-color:  var(--dark);
-  color: var(--primary);
+  color: var(--secondary);
   height: 50px;
   padding: 15px 15px;
 }
@@ -59,18 +69,16 @@
   justify-content: space-between;
 }
 
-/* .nav-items:hover {
-  transform: scale(1.2);
-} */
-
 .nav-logo {
   width: 55px;
   margin-right: 14px;
 }
 
 body {
-  color: var(--primary);
-  background-image: url("BackgroundImage1.jpg"), url("BackgroundImage2.jpg");
+  color: var(--dark);
+/*   background-image: linear-gradient(120deg, var(--secondary) 0%, var(--dark) 100%); */
+  background-image: linear-gradient(90deg,  #82e8ff 0%,  #00242b);
+/*   background-image: url("BackgroundImage1.jpg"), url("BackgroundImage2.jpg"); */
   background-size: cover;
 }
 
@@ -102,18 +110,184 @@ main {
   margin: 30px;
 }
 
-/* .questions {
-  color: rgb(15, 205, 22);
-  padding: 16px;
-  width: 80%;
-  height: auto;
-  margin: 0 auto;   
-} */
+.questions {
+  margin-top: 60px;
+}
 
-input[type=text] {
+/* ADD CLASSNAME !!! */
+/* input[type=text] {
   width: 750px;
   height: 24px;
   font-size: medium;
   border-radius: 2px;
   background-color: var(--light);
+} */
+
+#big-button {
+  background-color: var(--primary);
+  font-size: large;
+  margin: 8px;
+  margin-top: 30px;
+  padding: 10px;
+  outline-color: gray;
+  outline-style: auto;
+  color: var(--light);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#big-button:hover {
+  transform: scale(1.1);
+  background-color: var(--dark);
+  transition: background-color 1s ease-out 50ms;
+}
+
+/* This is not used in the latest version, replaced with .plus-btn:
+#small-button {
+  background-color: var(--primary);
+  font-size: medium;
+  margin-left: 30px;
+  margin-top: 24px;
+  padding: 10px;
+  outline-color: gray;
+  outline-style: auto;
+  color: var(--light);
+  font-weight: 600;
+  cursor: pointer;
+} */
+
+/* #small-button:hover {
+  transform: scale(1.2);
+} */
+
+.plus-btn, .minus-btn {
+  margin-left: 2px;
+  background: transparent;
+  color: white;
+  padding: 4px;
+  font-size: medium;
+  border: 1px;
+  border-color: var(--light);
+  cursor: pointer;
+}
+
+.plus-btn :hover, .minus-btn :hover {
+  transform: scale(1.5);
+}
+
+/* .thumb-up {
+  background-color: transparent;
+} */
+
+section {
+  width: 100%;
+  max-width: 420px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 250;
+  justify-content: space-evenly;
+  flex-grow: 1;
+  padding-bottom: 1rem;
+}
+
+a, a:visited {
+  color: var(--light);
+}
+
+.nav-link, .nav-link:visited {
+  color: var(--secondary);
+  text-decoration: none;
+}
+
+.form-input,
+button,
+textarea {
+font-family: 'Nunito', sans-serif;
+font-size: 22px;
+padding: 0.25rem;
+border-radius: 0.5rem;
+}
+
+.login-btn:valid {
+  background-color: var(--highlight);
+  cursor: pointer;
+}
+
+label,
+button {
+margin-top: 1rem;
+}
+
+button {
+padding: 0.5rem;
+}
+
+.instructions {
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 0.25rem;
+  position: relative;
+  bottom: -10px;
+}
+
+.instructions > svg {
+  margin-right: 0.25rem;
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+
+.hide {
+  display: none;
+}
+
+.valid {
+  color: limegreen;
+  margin-left: 0.25rem;
+}
+
+.invalid {
+  color: red;
+  margin-left: 0.25rem;
+}
+
+.errmsg {
+  background-color: lightpink;
+  color: firebrick;
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.2rem;
+}
+
+.line {
+  display: inline-block;
+}
+
+.register-form, .login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem 0.5rem;
+}
+
+.info {
+  margin: 3rem;
+  line-height: 1.8rem;
 }

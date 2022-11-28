@@ -3,11 +3,11 @@ import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 
+// TODO: add first name and last name to the registration form
+
 // Tested errors: "Palvelin ei vastaa" and "Rekisteröityminen epäonnistui"
 
-// TODO: Store token to localstorage
-
-const USER_REGEX = /^(?=.*@)[A-z0-9-_@.]{3,49}$/;
+const USER_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = 'https://localhost:8080/api/signup';
 
@@ -49,41 +49,38 @@ const Register = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // prevents the page from refreshing
-        // if button enabled with JS hack
+        // Add a dispatch here? -Register initiated, etc. see example from rest api app
+        // if button enabled with JS hack:
         const v1 = USER_REGEX.test(user);
         const v2 = PWD_REGEX.test(pwd);
         if (!v1 || !v2) {
             setErrMsg("Virheellinen sähköpostiosoite tai salasana");
             return;
         }
-// TODO: ADD AXIOS REQUEST HERE WITH TRY/CATCH! STORE TOKEN IN LOCAL STORAGE!
         try {
-            console.log("USER:", user)
-            console.log("PWD", pwd)
-                const response = await axios.post('https://localhost:8080/api/signup',
-                    // JSON.stringify({ user, pwd }), // OMG WHY???????????????
+            console.log("Register.js, handleSubmit, user:", user)
+            console.log("Register.js, handleSubmit, pwd:", pwd)
+                const response = await axios.post(REGISTER_URL,
+                    // JSON.stringify({ user, pwd }),
                     {
-/*                         headers: { 'Content-Type': 'application/json' },
+                        /* These are not needed, because the headers are set in routes.js and queries.js
+                        headers: { 'Content-Type': 'application/json' },
                         withCredentials: true, */
                         email: user,
                         password: pwd
                     }
                 )
-                console.log("RESPONSE =", response)
 
-/*             const response = await axios.post(REGISTER_URL,
-                JSON.stringify({ user, pwd }),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
-            ); */
-            console.log(response?.data);
+/*             console.log("Register.js, handleSubmit, response.data:", response?.data);
             console.log(response?.accessToken);
-            console.log(JSON.stringify(response))
+            console.log(JSON.stringify(response)) */
+            console.log("Register.js, handleSubmit, response:", response)
+            console.log("Register.js, handleSubmit, response.data:", response.data)
+            console.log("Register.js, handleSubmit, response.data.data:", response.data.data)
+            console.log("Register.js, handleSubmit, response.data.data.token:", response.data.data.token)
+            localStorage.setItem("token", response?.data?.data?.token)
             setSuccess(true);
-            //clear state and controlled inputs
-            //need value attrib on inputs for this
+            // Clearing state and controlled inputs (the value attribute on inputs is needed for this)
             setUser('');
             setPwd('');
             setMatchPwd('');
@@ -105,7 +102,7 @@ const Register = () => {
                 <section>
                     <h1>Kirjautuminen onnistui!</h1>
                     <p>
-                        <a href="https://i.pinimg.com/236x/11/c2/c8/11c2c8fc3c0678101a020aaabb898e63--tech-support-don-t-worry.jpg">Jatka sivulle</a>
+                        <a href="http://localhost:3000/hallintapaneeli">Jatka sivulle</a>
                     </p>
                 </section>
             ) : (
@@ -134,9 +131,7 @@ const Register = () => {
                         />
                         <p id="uidnote" className={userFocus && user && !validName ? "instructions" : "offscreen"}>
                             <FontAwesomeIcon icon={faInfoCircle} />
-                            4-50 kirjainta.<br />
-                            Täytyy sisältää: @<br />
-                            Sallitut merkit: kirjaimet, numerot, alaviivat, väliviivat, pisteet ja @.
+                            Syötä hyväksyttyä muotoa oleva sähköpostiosoite.
                         </p>
 
 
@@ -160,7 +155,7 @@ const Register = () => {
                         <p id="pwdnote" className={pwdFocus && !validPwd ? "instructions" : "offscreen"}>
                             <FontAwesomeIcon icon={faInfoCircle} />
                             8-24 kirjainta.<br />
-                            Täytyy sisältää isoja ja pieniä kirjaimia, numeron ja erikoismerkin.<br />
+                            Salasanan täytyy sisältää: isoja ja pieniä kirjaimia, numero ja erikoismerkki.<br />
                             Sallitut erikoismerkit: <span aria-label="exclamation mark">!</span> <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>
                         </p>
 
@@ -186,13 +181,13 @@ const Register = () => {
                             <FontAwesomeIcon icon={faInfoCircle} />
                             Salasanojen täytyy täsmätä.
                         </p>
-
-                        <button disabled={!validName || !validPwd || !validMatch ? true : false}>Luo tunnus</button>
+                        {/* No onClick even required for the button below, because it is the only button in the form, submit event triggered instead*/}
+                        <button className="login-btn" disabled={!validName || !validPwd || !validMatch ? true : false}>Luo tunnus</button>
                     </form>
                     <p>
                         Onko sinulla jo tunnukset?<br />
                         <span className="line">
-                            <a href="https://i.pinimg.com/236x/11/c2/c8/11c2c8fc3c0678101a020aaabb898e63--tech-support-don-t-worry.jpg">Kirjaudu sisään</a>
+                            <a href="http://localhost:3000/kirjautuminen">Kirjaudu sisään</a>
                         </span>
                     </p>
                 </section>

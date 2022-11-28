@@ -27,7 +27,7 @@ const pool = new Pool({
          called two query functions:
          Error: Called end on pool more than once */
 
-/* ??? Can the data be stored both to db and json file?
+/* ??? Should the data be stored both to db and json file?
 let data = fs.readFileSync('./examdata.json', { encoding: 'utf8', flag: 'r' }) */
 
 // Find questions (???) and todos (!!!)
@@ -46,9 +46,9 @@ const signUp = async (email, hashed) => {
     const values = [email, hashed]
     try {
         const result = await pool.query(text, values)
-        console.log("queries.js, signUp, result =", result)
+/*         console.log("queries.js, signUp, result =", result)
         console.log("queries.js, signUp, result.rows[0] =", result.rows[0])
-        console.log("queries.js, signUp, result.rows[0].id =", result.rows[0].id)
+        console.log("queries.js, signUp, result.rows[0].id =", result.rows[0].id) */
         return result.rows[0].id
     } catch (error) {
         console.log("There was an error:", error)

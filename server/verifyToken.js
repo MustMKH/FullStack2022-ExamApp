@@ -1,4 +1,4 @@
-// TODO imports!!
+// TODO: imports!!
 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -13,4 +13,4 @@ const verifyToken = (req, res, next) => {
     next()
 }
 
-module.exports = verifyToken;
+// module.exports = verifyToken;
