@@ -2,13 +2,21 @@
 
 Keskeneräinen tenttisovellus. Full Stack 2022 ohjelmointikurssin projektisovellus.
 
+## Uusimmat komponentit
+
+'Dashboard.js', 'Home.js'
+
 ## Viimeisimmät muutokset tehty tiedostoihin
 
-'Register.js'
+'Register.js', 'Login.js', 'App.js', 'Header.js'
 
 ### Viimeisimmät muutokset uusimmasta vanhimpaan
 
-- Luotu React sovellukseen Rekisteröintitoiminto. Käyttäjätunnukset ja salatut salasanat tallentuvat tietokantaan ja käyttäjälle palautetaan Bearer token.
+- Luotu komponentit Home ja Dashboard
+- Luotu React Router Domin avulla polut sovelluksen eri osioihin
+- Token tallentuu Local Storageen kirjautumisen ja rekisteröitymisen yhteydessä.
+- Luotu React sovellukseen kirjautumistoiminto.
+- Luotu React sovellukseen rekisteröintitoiminto. Käyttäjätunnukset ja salatut salasanat tallentuvat tietokantaan.
 - Luotu salattu palvelin.
 - Luotu PostreSQL relaatiotietokanta, johon säilötty sovelluksen data.
 - Luotu Express palvelin, jossa on 'get', 'post', 'put' ja 'delete' toiminnot tiedon hakua, muokkaamista ja tallennusta varten.
