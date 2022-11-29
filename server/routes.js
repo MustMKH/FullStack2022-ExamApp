@@ -92,7 +92,7 @@ router.post('/login', async (req, res, next) => {
         token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email }, // = payload
             "secretkeyappearshere", // dotenv: recommended, store passwords in a separate file
-            { expiresIn: "1h" }
+            { expiresIn: "10h" }
         )
     } catch (error) {
         console.log(error)
@@ -131,14 +131,14 @@ const isAdmin = async (req, res, next) => {
         res.status(500).send(error)
     }
 
-/* This is unneccessary repetition:
-    const token = req.headers.authorization?.split(' ')[1];
-    // Authorization: 'Bearer TOKEN'
-    if (!token) { res.status(200).json({ success: false, message: "Error! Token was not provided." }) }
-    // Decoding the token
-    const decodedToken = jwt.verify(token, "secretkeyappearshere")
-    req.decoded = decodedToken
-    next() */
+    /* This is unneccessary repetition:
+        const token = req.headers.authorization?.split(' ')[1];
+        // Authorization: 'Bearer TOKEN'
+        if (!token) { res.status(200).json({ success: false, message: "Error! Token was not provided." }) }
+        // Decoding the token
+        const decodedToken = jwt.verify(token, "secretkeyappearshere")
+        req.decoded = decodedToken
+        next() */
 }
 
 // router.use(verifyToken)

@@ -69,6 +69,6 @@ https
             cert: fs.readFileSync("exam-app.crt")
         },
         app
-    ).listen(port, () => console.log(`Exam API listening on port ${port}.`))
+    ).listen(port, () => console.log(`Exam App API listening on port ${port}.`))
 
 /* app.listen(port, () => console.log(`Exam API listening on port ${port}`)) */

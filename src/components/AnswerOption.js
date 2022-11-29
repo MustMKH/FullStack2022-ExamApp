@@ -1,4 +1,4 @@
-const Answer = (props) => {
+const AnswerOption = (props) => {
   return (
     <div>
       <input type="text" onChange={(event) => {
@@ -13,7 +13,8 @@ const Answer = (props) => {
         })
       }} value={props.answer.contents} />
       <button onClick={() => {
-        props.dispatch({ type: "ADD_ANSWER", payload: { questionIndex: props.questionIndex, examIndex: props.examIndex } })}}
+        props.dispatch({ type: "ADD_ANSWER", payload: { questionIndex: props.questionIndex, examIndex: props.examIndex } })
+      }}
         className='plus-btn'>
         <i className="fas fa-plus-square"></i>
       </button>
@@ -24,4 +25,4 @@ const Answer = (props) => {
   );
 }
 
-export default Answer;
+export default AnswerOption;

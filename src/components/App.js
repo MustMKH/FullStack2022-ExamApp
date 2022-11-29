@@ -1,6 +1,5 @@
 import '../App.css'
 import { useReducer, useEffect, useState, Fragment } from 'react'
-import axios from 'axios'
 
 // - - - REACT ROUTER DOM - - -
 import { BrowserRouter, Routes, Route, Redirect } from 'react-router-dom'
@@ -9,11 +8,13 @@ import { BrowserRouter, Routes, Route, Redirect } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
 import Exam from './Exam'
+import Exams from './Exams'
 import AlertBox from './AlertBox'
 import Register from './Register'
 import Login from './Login'
 import Dashboard from './Dashboard'
 import Home from './Home'
+import Users from './Users'
 
 // NOTE: REDUCER HANDLES LOCAL STATE, CHANGES IN DB ARE HANDLED BY AXIOS
 
@@ -73,7 +74,7 @@ let initialData = {
 }
 
 // The latest version of this app utilizes the useReducer hook. See the useState version in useState.js
-function reducer(state,action) {
+function reducer(state, action) {
   switch (action.type) {
 
     case 'EXAM_RENAMED': {
@@ -99,9 +100,9 @@ function reducer(state,action) {
       return stateCopy
     }
 
-/* TODO: case 'DELETE_EXAM': {
+    /* TODO: case 'DELETE_EXAM': {
 
-    } */
+        } */
 
     // not working:
     case 'DELETE_QUESTION': {
@@ -125,38 +126,42 @@ function reducer(state,action) {
       }
     }
 
-    case 'ADD_EXAM': {
-      console.log("Reducer called, exam added", action);
-      return {...state, exams:[...state.exams, {title: "Anna tentin otsikko", questions:[defaultQuestion]}], saveRequired:true}
-    }
+    /*     case 'ADD_EXAM': {
+          console.log("Reducer called, exam added", action);
+          return { ...state, exams: [...state.exams, { title: "Anna tentin otsikko", questions: [defaultQuestion] }], saveRequired: true }
+        } */
+
+    /*   TODO!!!! case 'ADD_EXAM': {
+
+    } */
 
     // TODO: case 'ADD_QUESTION'
     case 'ADD_QUESTION': {
       console.log("Reducer called, question added", action)
       const stateCopy = JSON.parse(JSON.stringify(state))
-      stateCopy.exams[action.payload.examIndex].questions.push({contents: "Kirjoita kysymys tähän", answers:[defaultAnswer]})
+      stateCopy.exams[action.payload.examIndex].questions.push({ contents: "Kirjoita kysymys tähän", answers: [defaultAnswer] })
       return stateCopy
     }
 
     case 'ADD_ANSWER': {
-/*       the below code generates two answers at a time, used JSON.parse instead
-      const stateCopy = {...state}
-      stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Kirjoita vastausvaihtoehto tähän"})
-      return stateCopy */
+      /*       the below code generates two answers at a time, used JSON.parse instead
+            const stateCopy = {...state}
+            stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Kirjoita vastausvaihtoehto tähän"})
+            return stateCopy */
       console.log("Reducer called, answer added", action)
       const stateCopy = JSON.parse(JSON.stringify(state))
-      stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Kirjoita vastausvaihtoehto tähän"})
+      stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({ contents: "Kirjoita vastausvaihtoehto tähän" })
       return stateCopy
     }
 
     case 'UPDATE_SAVE_STATUS':
-      return {...state, saveRequired: action.payload}
+      return { ...state, saveRequired: action.payload }
 
     case 'SAVING_DATA':
-      return {...state, dataSaved: action.payload}
+      return { ...state, dataSaved: action.payload }
 
     case 'INITIALIZE_DATA':
-      return {...action.payload, initialized: true}
+      return { ...action.payload, initialized: true }
 
     default:
       throw new Error("This is an error from the reducer function. You're not supposed to be here...")
@@ -164,17 +169,22 @@ function reducer(state,action) {
 }
 
 const App = () => {
+  const [dispatch] = useReducer(reducer)
+
   return (
     <Fragment>
       <Header />
       <BrowserRouter>
         <div className='container'>
-        <Routes>
-          <Route exact path='/' element={<Home />} />
-          <Route exact path='/kirjautuminen' element={<Login />} />
-          <Route exact path='/rekisteröinti' element={<Register />} />
-          <Route exact path='/hallintapaneeli' element={<Dashboard />} />
-        </Routes>
+          <Routes>
+            <Route exact path='/' element={<Home />} />
+            <Route exact path='/kirjautuminen' element={<Login />} />
+            <Route exact path='/rekisteröinti' element={<Register />} />
+            <Route exact path='/opettaja/hallintapaneeli' element={<Dashboard />} />
+            {/* Dispatch sent to exams: */}
+            <Route exact path='/opettaja/tentit' element={<Exams dispatch={dispatch} />} />
+            <Route exact path='/opettaja/käyttäjät' element={<Users />} />
+          </Routes>
         </div>
       </BrowserRouter>
       <Footer />
@@ -227,32 +237,32 @@ const App = () => {
 /*  This version employs an Express server that receives and stores data with 'get' and 'post'.
     The useEffect that stores data in the local storage can be found at '.localStorage.js' */
 
-  /* useEffect(() => {
-    let timerID;
-    console.log(timerID)
-    if (appData.saveRequired == true) {
-      dispatch({type: "UPDATE_SAVE_STATUS", payload: false})
-      if (timerID) {
-        console.log("The timer has been cleared?")
-        clearTimeout(timerID)
-      }
-      console.log("saving exam name")
-      console.log("exam:", appData)
-      dispatch({type: "SAVING_DATA", payload: false})
-      // Adding a timer to delay saving data + creating a variable for the timer's ID:
-
-        timerID = setTimeout(() => {
-          console.log("this log is from the setTimeout function")
-          dispatch({type: "SAVING_DATA", payload: true})
-          localStorage.setItem('examData', JSON.stringify(appData));
-          console.log("timerID:", timerID)
-        }, 5000)
-
-      console.log("timerID:", timerID)
+/* useEffect(() => {
+  let timerID;
+  console.log(timerID)
+  if (appData.saveRequired == true) {
+    dispatch({type: "UPDATE_SAVE_STATUS", payload: false})
+    if (timerID) {
+      console.log("The timer has been cleared?")
+      clearTimeout(timerID)
     }
-    // Added clearTimeout here as well:
-    return () => clearTimeout(timerID)
-  }, [appData.saveRequired]); */
+    console.log("saving exam name")
+    console.log("exam:", appData)
+    dispatch({type: "SAVING_DATA", payload: false})
+    // Adding a timer to delay saving data + creating a variable for the timer's ID:
+
+      timerID = setTimeout(() => {
+        console.log("this log is from the setTimeout function")
+        dispatch({type: "SAVING_DATA", payload: true})
+        localStorage.setItem('examData', JSON.stringify(appData));
+        console.log("timerID:", timerID)
+      }, 5000)
+
+    console.log("timerID:", timerID)
+  }
+  // Added clearTimeout here as well:
+  return () => clearTimeout(timerID)
+}, [appData.saveRequired]); */
 
 /*   return (
     <div>

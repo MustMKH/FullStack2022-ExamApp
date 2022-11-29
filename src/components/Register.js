@@ -60,20 +60,20 @@ const Register = () => {
         try {
             console.log("Register.js, handleSubmit, user:", user)
             console.log("Register.js, handleSubmit, pwd:", pwd)
-                const response = await axios.post(REGISTER_URL,
-                    // JSON.stringify({ user, pwd }),
-                    {
-                        /* These are not needed, because the headers are set in routes.js and queries.js
-                        headers: { 'Content-Type': 'application/json' },
-                        withCredentials: true, */
-                        email: user,
-                        password: pwd
-                    }
-                )
+            const response = await axios.post(REGISTER_URL,
+                // JSON.stringify({ user, pwd }),
+                {
+                    /* These are not needed, because the headers are set in routes.js and queries.js
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true, */
+                    email: user,
+                    password: pwd
+                }
+            )
 
-/*             console.log("Register.js, handleSubmit, response.data:", response?.data);
-            console.log(response?.accessToken);
-            console.log(JSON.stringify(response)) */
+            /*             console.log("Register.js, handleSubmit, response.data:", response?.data);
+                        console.log(response?.accessToken);
+                        console.log(JSON.stringify(response)) */
             console.log("Register.js, handleSubmit, response:", response)
             console.log("Register.js, handleSubmit, response.data:", response.data)
             console.log("Register.js, handleSubmit, response.data.data:", response.data.data)
@@ -102,7 +102,7 @@ const Register = () => {
                 <section>
                     <h1>Kirjautuminen onnistui!</h1>
                     <p>
-                        <a href="http://localhost:3000/hallintapaneeli">Jatka sivulle</a>
+                        <a href="http://localhost:3000/opettaja/hallintapaneeli">Jatka sivulle</a>
                     </p>
                 </section>
             ) : (
