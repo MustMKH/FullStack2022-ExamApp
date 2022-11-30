@@ -15,6 +15,7 @@ import Login from './Login'
 import Dashboard from './Dashboard'
 import Home from './Home'
 import Users from './Users'
+import EditExam from './EditExam'
 
 // NOTE: REDUCER HANDLES LOCAL STATE, CHANGES IN DB ARE HANDLED BY AXIOS
 
@@ -131,9 +132,10 @@ function reducer(state, action) {
           return { ...state, exams: [...state.exams, { title: "Anna tentin otsikko", questions: [defaultQuestion] }], saveRequired: true }
         } */
 
-    /*   TODO!!!! case 'ADD_EXAM': {
-
-    } */
+    case 'ADD_EXAM': {
+      console.log("Reducer called, exam added", action)
+      return { ...state, exams: [...state.exams, { title: "Anna tentin otsikko" }], saveRequired: true }
+    }
 
     // TODO: case 'ADD_QUESTION'
     case 'ADD_QUESTION': {
@@ -181,8 +183,8 @@ const App = () => {
             <Route exact path='/kirjautuminen' element={<Login />} />
             <Route exact path='/rekisteröinti' element={<Register />} />
             <Route exact path='/opettaja/hallintapaneeli' element={<Dashboard />} />
-            {/* Dispatch sent to exams: */}
-            <Route exact path='/opettaja/tentit' element={<Exams dispatch={dispatch} />} />
+            <Route exact path='/opettaja/tentit' element={<Exams />} />
+            <Route exact path='/opettaja/tentit/muokkaus' element={<EditExam />} />
             <Route exact path='/opettaja/käyttäjät' element={<Users />} />
           </Routes>
         </div>

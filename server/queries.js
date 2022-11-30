@@ -39,16 +39,15 @@ let data = fs.readFileSync('./examdata.json', { encoding: 'utf8', flag: 'r' }) *
 // Sign up
 
 const signUp = async (email, hashed) => {
-    console.log("queries.js, signUp, parameter email =", email)
-    console.log("queries.js, signUp, parameter hashed =", hashed)
-    // const text = ('INSERT INTO user_data (email, password) VALUES ($1, $2) returning id', [email, hashed])
+    /*     console.log("queries.js, signUp, parameter email =", email)
+        console.log("queries.js, signUp, parameter hashed =", hashed) */
     const text = 'INSERT INTO user_data (email, password) VALUES ($1, $2) returning id'
     const values = [email, hashed]
     try {
         const result = await pool.query(text, values)
-/*         console.log("queries.js, signUp, result =", result)
-        console.log("queries.js, signUp, result.rows[0] =", result.rows[0])
-        console.log("queries.js, signUp, result.rows[0].id =", result.rows[0].id) */
+        /*         console.log("queries.js, signUp, result =", result)
+                console.log("queries.js, signUp, result.rows[0] =", result.rows[0])
+                console.log("queries.js, signUp, result.rows[0].id =", result.rows[0].id) */
         return result.rows[0].id
     } catch (error) {
         console.log("There was an error:", error)
@@ -73,12 +72,12 @@ const login = async (email) => {
 
 // - - - adminCheck - - -
 const adminCheck = async (email) => {
-    console.log("queries.js, adminCheck, parameter email =", email)
+    /*     console.log("queries.js, adminCheck, parameter email =", email) */
     const text = 'SELECT is_admin FROM user_data WHERE email = $1'
     const values = [email]
     try {
         const result = await pool.query(text, values)
-        console.log("queries.js, adminCheck, result.rows[0] =", result.rows[0])
+        /*         console.log("queries.js, adminCheck, result.rows[0] =", result.rows[0]) */
         return result.rows[0].is_admin
     } catch (error) {
         console.log("There was an error:", error)
@@ -92,7 +91,7 @@ const adminCheck = async (email) => {
 // Select list of users
 const getUsers = async () => {
     // console.log("queries.js getUser no parameter")
-    const text = 'SELECT id, first_name, last_name, email FROM user_data'
+    const text = 'SELECT id, first_name, last_name, email FROM user_data ORDER BY id'
     try {
         const result = await pool.query(text)
         return result.rows
@@ -139,7 +138,7 @@ const getAnswerOptions = async () => {
 // Select questions under specific exam
 
 const getQuestionsForExam = async (examId) => {
-    const text = `SELECT * FROM question WHERE exam_id = ${examId} ORDER BY number`
+    const text = `SELECT * FROM question WHERE exam_id = ${examId}`
     try {
         const result = await pool.query(text)
         return result.rows
@@ -151,7 +150,7 @@ const getQuestionsForExam = async (examId) => {
 // Select answer options under specific question
 
 const getAnswerOptionsForQuestion = async (questionId) => {
-    const text = `SELECT * FROM answer_option WHERE question_id = ${questionId} ORDER BY number`
+    const text = `SELECT * FROM answer_option WHERE question_id = ${questionId}`
     try {
         const result = await pool.query(text)
         return result.rows
@@ -225,10 +224,10 @@ const createUser = async (params) => {
 
 // Insert new exam
 const createExam = async (params) => {
-    // console.log("queries.js createExam params.number and params.title =", params.number, params.title)
+    // console.log("queries.js createExam params.title =", params.title)
     try {
-        const text = 'INSERT INTO exam (number, title) VALUES ($1, $2)'
-        const values = [params.number, params.title]
+        const text = 'INSERT INTO exam (title) VALUES ($1)'
+        const values = [params.title]
         const result = await pool.query(text, values)
         // No need for return? return result.rows[0] or RETURNING * ???
     } catch (error) {
@@ -239,22 +238,21 @@ const createExam = async (params) => {
 // Insert new question
 const createQuestion = async (params) => {
     console.log("queries.js createQuestion params.exam_id =", params.exam_id)
-    console.log("queries.js createQuestion params.number =", params.number)
     console.log("queries.js createQuestion params.contents =", params.contents)
     try {
-        const text = "INSERT INTO question (exam_id, number, contents) VALUES ($1, $2, $3)"
-        values = [params.exam_id, params.number, params.contents]
+        const text = "INSERT INTO question (exam_id, contents) VALUES ($1, $2)"
+        values = [params.exam_id, params.contents]
         const result = await pool.query(text, values)
     } catch (error) {
         console.log("There was an error:", error.stack)
     }
 }
 
-// Insert new answer option
+// Insert new answer option - Get exam id ???
 const createAnswerOption = async (params) => {
     try {
-        const text = "INSERT INTO answer_option (question_id, number, contents, is_correct) VALUES ($1, $2, $3, $4)"
-        const values = [params.question_id, params.number, params.contents, params.is_correct]
+        const text = "INSERT INTO answer_option (question_id, contents, is_correct) VALUES ($1, $2, $3)"
+        const values = [params.question_id, params.contents, params.is_correct]
         const result = await pool.query(text, values)
     } catch (error) {
         console.log("There was an error:", error.stack)
@@ -279,12 +277,11 @@ const updateUser = async (id, first_name, last_name, email) => {
 }
 
 // Update exam
-const updateExam = async (id, number, title) => {
-    const text = `UPDATE exam SET number = '${number}', title = '${title}' WHERE id=${id}`
-/*     console.log("queries.js, updateExam, parametri id =", id)
-    console.log("queries.js, updateExam, parametri number =", number)
-    console.log("queries.js, updateExam, parametri title =", title)
-    console.log("queries.js, updateExam, text =", text) */
+const updateExam = async (id, title) => {
+    const text = `UPDATE exam SET title = '${title}' WHERE id=${id}`
+    /*     console.log("queries.js, updateExam, parametri id =", id)
+        console.log("queries.js, updateExam, parametri title =", title)
+        console.log("queries.js, updateExam, text =", text) */
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -293,8 +290,8 @@ const updateExam = async (id, number, title) => {
 }
 
 // Update question
-const updateQuestion = async (id, number, contents) => {
-    const text = `UPDATE question SET number = '${number}', contents = '${contents}' WHERE id=${id}`
+const updateQuestion = async (id, contents) => {
+    const text = `UPDATE question SET contents = '${contents}' WHERE id=${id}`
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -303,14 +300,11 @@ const updateQuestion = async (id, number, contents) => {
 }
 
 // Update answer option
-const updateAnswerOption = async (id, number, contents, is_correct) => {
+const updateAnswerOption = async (id, contents, is_correct) => {
     console.log("queries.js, updateAnswerOption id =", id)
-    console.log("queries.js, updateAnswerOption number =", number)
     console.log("queries.js, updateAnswerOption contents =", contents)
     console.log("queries.js, updateAnswerOption is_correct =", is_correct)
-    const text = (`UPDATE answer_option SET number = '${number}', contents = '${contents}', is_correct = '${is_correct}' WHERE id=${id}`)
-/*     const text = 'UPDATE answer_option SET (number, contents, is_correct) VALUES ($1, $2, $3) WHERE id=3'
-    const values = [params.number, params.contents, params.is_correct] */
+    const text = (`UPDATE answer_option SET contents = '${contents}', is_correct = '${is_correct}' WHERE id=${id}`)
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -320,10 +314,10 @@ const updateAnswerOption = async (id, number, contents, is_correct) => {
 
 // - - - Deletes - - -
 
-// Delete user (TODO: cannot delete users with exam data, delete cascade !!!)
-const deleteUser = async (kukkuluuruu) => {
-    console.log ("queries.js deleteUser parameter kukkuluuruu =", kukkuluuruu)
-    const text = `DELETE FROM user_data WHERE id=${kukkuluuruu}`
+// Delete user
+const deleteUser = async (id) => {
+    console.log("queries.js deleteUser parameter id =", id)
+    const text = `DELETE FROM user_data WHERE id=${id}`
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -331,9 +325,9 @@ const deleteUser = async (kukkuluuruu) => {
     }
 }
 
-// Delete exam (TODO: test delete cascade !!!)
+// Delete exam
 const deleteExam = async (id) => {
-    console.log ("queries.js deleteExam parameter id =", id)
+    /*     console.log("queries.js deleteExam parameter id =", id) */
     const text = `DELETE FROM exam WHERE id=${id}`
     try {
         const result = await pool.query(text)
@@ -342,7 +336,7 @@ const deleteExam = async (id) => {
     }
 }
 
-// Delete question (TODO: test delete cascade !!!)
+// Delete question
 const deleteQuestion = async (id) => {
     const text = (`DELETE FROM question WHERE id=${id}`)
     try {

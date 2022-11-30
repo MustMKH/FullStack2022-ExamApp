@@ -21,7 +21,6 @@ const Users = () => {
                 })
                 console.log("Users.js, Users, useEffect, getUsers, response:", response)
                 console.log("Users.js, Users, useEffect, getUsers, response.data:", response.data)
-                // is mounted???
                 isMounted && setUsers(response.data)
             } catch (error) {
                 console.error(error)
@@ -38,15 +37,17 @@ const Users = () => {
 
 
     return (
-        <article>
-            <h2>Users List</h2>
-            {users?.length
-                ? (
-                    <ul>
-                        {users.map((user, i) => <li key={i}> {user?.id} {user?.email} {user?.role}</li>)}
-                    </ul>
-                ) : <p>No users to display</p>}
-        </article>
+        <div>
+            <div className='page-title'>Users List</div>
+            <div >
+                {users?.length
+                    ? (
+                        <ul className='user-list'>
+                            {users.map((user, i) => <li key={i}> {user?.id} {user?.email} {user?.role}</li>)}
+                        </ul>
+                    ) : <p>No users to display</p>}
+            </div>
+        </div>
     )
 }
 

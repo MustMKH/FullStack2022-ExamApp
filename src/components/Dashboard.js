@@ -16,14 +16,10 @@ const Dashboard = ({ setAuth }) => {
 
   return (
     <Fragment>
-      <h3>Tenttisovelluksen tietojen hallinta</h3>
+      <div className='page-title'>Tenttisovelluksen tietojen hallinta</div>
       <ul>
-        <li>
-          Pääset muokkaamaan tenttejä, kysymyksiä ja vastausvaihtoehtoja <a href="http://localhost:3000/opettaja/tentit">tästä</a>.
-        </li>
-        <li>
-          Pääset muokkaamaan käyttäjien tietoja <a href="http://localhost:3000/opettaja/käyttäjät">tästä</a>.
-        </li>
+        <h3>Pääset muokkaamaan tenttejä, kysymyksiä ja vastausvaihtoehtoja <a href="http://localhost:3000/opettaja/tentit">tästä</a>.</h3>
+        <h3>Pääset muokkaamaan käyttäjien tietoja <a href="http://localhost:3000/opettaja/käyttäjät">tästä</a>.</h3>
       </ul>
     </Fragment>
   )

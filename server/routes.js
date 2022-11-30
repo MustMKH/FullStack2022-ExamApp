@@ -6,11 +6,11 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
+
+
 /* TODO: verifyToken can be used as middleware for all functions that require
          verification: router.use(verifyToken). This can be placed after the
          functions that do not require auth */
-
-// TODO: user email as primary key? if not, at least add unique constraint!
 
 // TODO: get name of logged in user
 
@@ -18,6 +18,10 @@ const saltRounds = 10
 
 /* TODO: remove if statements that check if an item is found. This
 should be checked in the query handlers instead (see note in queries.js) */
+
+// FIND: ??? and !!!
+
+
 
 // - - - Middleware - - -
 
@@ -32,10 +36,14 @@ function asyncHandler(cb) {
     }
 }
 
+
+
 // - - - Health test - - -
 router.get('/health', asyncHandler(async (req, res) => {
     res.send("ok")
 }))
+
+
 
 // - - - SIGNUP - - -
 
@@ -67,6 +75,8 @@ router.post('/signup', async (req, res, next) => {
             data: { userId: result, email: email, token: token }
         })
 })
+
+
 
 // - - - LOGIN - - -
 
@@ -113,16 +123,17 @@ router.post('/login', async (req, res, next) => {
         })
 })
 
+
+
 // - - - ADMIN CHECK - - -
 
-// Admin check
 const isAdmin = async (req, res, next) => {
     let admin
     try {
-        console.log("routes.js, isAdmin, argument req.decoded?.email =", req.decoded.email)
+        // console.log("routes.js, isAdmin, argument req.decoded?.email =", req.decoded.email)
         admin = await queries.adminCheck(req.decoded.email)
         if (admin) {
-            console.log("routes.js, isAdmin, if, admin =", admin)
+            // console.log("routes.js, isAdmin, if, admin =", admin)
             next()
         } else {
             res.status(403).send("Unauthorized access.")
@@ -130,15 +141,6 @@ const isAdmin = async (req, res, next) => {
     } catch (error) {
         res.status(500).send(error)
     }
-
-    /* This is unneccessary repetition:
-        const token = req.headers.authorization?.split(' ')[1];
-        // Authorization: 'Bearer TOKEN'
-        if (!token) { res.status(200).json({ success: false, message: "Error! Token was not provided." }) }
-        // Decoding the token
-        const decodedToken = jwt.verify(token, "secretkeyappearshere")
-        req.decoded = decodedToken
-        next() */
 }
 
 // router.use(verifyToken)
@@ -169,8 +171,8 @@ router.use(verifyToken)
 // Get list of users
 // router.get('/users', asyncHandler, isAdmin (async (req,res) => {
 router.get('/users', isAdmin, asyncHandler(async (req, res) => {
-    console.log("routes.js, router.get, '/users, req.decoded =", req.decoded)
-    console.log("Data is being requested from the server. Authorization required.")
+    /*     console.log("routes.js, router.get, '/users, req.decoded =", req.decoded)
+        console.log("Data is being requested from the server. Authorization required.") */
     const users = await queries.getUsers()
     res.json(users)
 }))
@@ -263,7 +265,7 @@ router.get('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
 
 // - - - Create new item - - -
 
-// Create new user - can admins add users (with dummy passwords because of not null) or do they have to register themselves???
+// Create new user - this is handled with registration
 router.post('/users', isAdmin, asyncHandler(async (req, res) => {
     if (req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.is_admin) {
         const user = await queries.createUser({
@@ -281,28 +283,24 @@ router.post('/users', isAdmin, asyncHandler(async (req, res) => {
 
 // Create new exam
 router.post('/exams', isAdmin, asyncHandler(async (req, res) => {
-    // console.log("routes.js - Ceate new exam - req.body.number:", req.body.number)
     // console.log("routes.js - Ceate new exam - req.body.title:", req.body.title)
-    if (req.body.number && req.body.title) {
+    if (req.body.title) {
         const exam = await queries.createExam({
-            number: req.body.number,
             title: req.body.title
         })
         res.status(201).json(exam)
     } else {
-        res.status(400).json({ message: "Missing exam number or title" })
+        res.status(400).json({ message: "Exam title required." })
     }
 }))
 
-// Create new question - is it better to use path or body for id (req.params.exam_id vs. req.body.exam_id)???
+// Create new question - use req.params.exam_id (not req.body.exam_id) !!!
 router.post('/questions', isAdmin, asyncHandler(async (req, res) => {
     console.log("routes.js - Ceate new question - req.body.exam_id:", req.body.exam_id)
-    console.log("routes.js - Ceate new question - req.body.number:", req.body.number)
     console.log("routes.js - Ceate new question - req.body.contents:", req.body.contents)
-    if (req.body.exam_id && req.body.number && req.body.contents) {
+    if (req.body.exam_id && req.body.contents) {
         const question = await queries.createQuestion({
             exam_id: req.body.exam_id,
-            number: req.body.number,
             contents: req.body.contents
         })
         res.status(201).json(question)
@@ -311,12 +309,11 @@ router.post('/questions', isAdmin, asyncHandler(async (req, res) => {
     }
 }))
 
-// Create new answer option - this currently leaves exam_id field empty!!!
+// Create new answer option - this currently leaves exam_id field empty !!!
 router.post('/answer_options', isAdmin, asyncHandler(async (req, res) => {
-    if (req.body.question_id && req.body.number && req.body.contents && req.body.is_correct) {
+    if (req.body.question_id && req.body.contents && req.body.is_correct) {
         const answerOption = await queries.createAnswerOption({
             question_id: req.body.question_id,
-            number: req.body.number,
             contents: req.body.contents,
             is_correct: req.body.is_correct
         })
@@ -346,7 +343,7 @@ router.put('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
     console.log("routes.js, router.put, 'exams/:id', req.params.id =", req.params.id)
     console.log("routes.js, router.put, 'exams/:id', exam =", exam)
     if (exam) {
-        await queries.updateExam(req.params.id, req.body.number, req.body.title)
+        await queries.updateExam(req.params.id, req.body.title)
         /* For a put request, it is convention to send in the status code 204, which means no content
         This means that everything went OK but there is nothing to send back
         We need another way to end the request or the server will just hang indefinitely
@@ -362,10 +359,9 @@ router.put('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
 router.put('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
     const question = await queries.getQuestion(req.params.id)
     console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.body.number =", req.body.number)
     console.log("routes.js, router.put, 'questions/:id', req.body.contents =", req.body.contents)
     if (question) {
-        await queries.updateQuestion(req.params.id, req.body.number, req.body.contents)
+        await queries.updateQuestion(req.params.id, req.body.contents)
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Question not found" })
@@ -376,13 +372,11 @@ router.put('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
 router.put('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
     const answerOption = await queries.getAnswerOption(req.params.id)
     console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.body.number =", req.body.number)
     console.log("routes.js, router.put, 'questions/:id', req.body.contents =", req.body.contents)
     console.log("routes.js, router.put, 'questions/:id', req.body.is_correct =", req.body.is_correct)
     // console.log(req.body)
     if (answerOption) {
-        // this does not work: if (answerOption && req.body.number && req.body.contents && req.body.is_correct) {
-        await queries.updateAnswerOption(req.params.id, req.body.number, req.body.contents, req.body.is_correct)
+        await queries.updateAnswerOption(req.params.id, req.body.contents, req.body.is_correct)
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Answer option not found" })
@@ -409,9 +403,9 @@ router.delete('/users/:id', isAdmin, asyncHandler(async (req, res, next) => {
 // Delete exam
 router.delete('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
     const exam = await queries.getExam(req.params.id)
-    console.log("routes.js, router.delete, '/exams/:id', req.params.id=", req.params.id)
-    console.log("routes.js, router.delete, '/exams/:id', exam=", exam)
-    console.log("routes.js, router.delete, '/exams/:id', exam.id=", exam.id)
+    /*     console.log("routes.js, router.delete, '/exams/:id', req.params.id=", req.params.id)
+        console.log("routes.js, router.delete, '/exams/:id', exam=", exam)
+        console.log("routes.js, router.delete, '/exams/:id', exam.id=", exam.id) */
     if (exam) {
         // const id = req.body.id
         await queries.deleteExam(exam.id)
