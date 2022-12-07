@@ -23,6 +23,11 @@
   flex-direction: column;
 }
 
+.question-items,
+.answer-option-items {
+  margin-left: 25px;
+}
+
 .user-list {
   list-style: none;
   display: flex;
@@ -43,10 +48,6 @@
   font-size: large;
   font-weight: 600;
 } */
-
-.answers {
-  margin-left: 25px;
-}
 
 .answer-title {
   margin-top: 40px;
@@ -88,14 +89,19 @@
 body {
   color: var(--dark);
   /*   background-image: linear-gradient(120deg, var(--secondary) 0%, var(--dark) 100%); */
-  background-image: linear-gradient(90deg, #82e8ff 0%, #00242b);
+  background-image: linear-gradient(90deg, var(--lgrad) 0%, var(--dgrad));
   /*   background-image: url("BackgroundImage1.jpg"), url("BackgroundImage2.jpg"); */
   background-size: cover;
 }
 
 .main-title {
+  margin-left: 25px;
   font-size: 28px;
   margin-top: 60px;
+}
+
+.section-title {
+  margin-left: 25px;
 }
 
 .sub-title {
@@ -122,20 +128,34 @@ main {
   margin: 30px;
 }
 
-.questions {
-  margin-top: 60px;
-}
-
-/* ADD CLASSNAME !!! */
-/* input[type=text] {
+.input-exam-title,
+.input-question,
+.input-answer-option {
   width: 750px;
   height: 24px;
   font-size: medium;
   border-radius: 2px;
   background-color: var(--light);
-} */
+}
 
-#big-button {
+.input-points {
+  width: 30px;
+  height: 24px;
+  font-size: medium;
+  border-radius: 2px;
+  background-color: var(--light);
+}
+
+.answer-items {
+  margin-bottom: 3rem;
+}
+
+.input-exam-title {
+  margin-left: 25px;
+  margin-bottom: 40px;
+}
+
+.big-btn {
   width: 35rem;
   background-color: var(--dgrad);
   font-size: medium;
@@ -148,33 +168,33 @@ main {
   cursor: pointer;
 }
 
-#big-button:hover {
+.big-btn:hover {
   transform: scale(1.02);
   color: var(--highlight);
   transition: background-color 1s ease-out 50ms;
 }
 
-/* This is not used in the latest version, replaced with .plus-btn:
-#small-button {
+.small-btn {
   background-color: var(--primary);
-  font-size: medium;
+  font-size: small;
   margin-left: 30px;
   margin-top: 24px;
   padding: 10px;
   outline-color: gray;
   outline-style: auto;
   color: var(--light);
-  font-weight: 600;
+  letter-spacing: 0.1rem;
   cursor: pointer;
-} */
+}
 
-/* #small-button:hover {
-  transform: scale(1.2);
-} */
+.small-btn:hover {
+  transform: scale(1.02);
+}
 
 .plus-btn,
 .minus-btn,
-.trash-btn {
+.trash-btn,
+.check-square {
   margin-left: 2px;
   background: transparent;
   color: white;
@@ -186,7 +206,9 @@ main {
 }
 
 .plus-btn :hover,
-.minus-btn :hover {
+.minus-btn :hover,
+.trash-btn :hover,
+.check-square :hover {
   transform: scale(1.5);
 }
 
@@ -319,4 +341,18 @@ button {
   color: var(--dgrad);
   /*   text-shadow: 0px 0px 5px var(--hue), 0px 0px 10px var(--hue), 0px 0px 10px var(--hue),
     0px 0px 20px var(--hue); */
+}
+
+.small-title {
+  padding: 10 px;
+}
+
+.router-link,
+.router-link:visited {
+  margin: 4rem;
+  color: var(--dgrad);
+}
+
+span+span {
+  margin-left: 10px;
 }

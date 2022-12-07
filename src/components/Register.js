@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { Link } from 'react-router-dom'
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -102,7 +103,7 @@ const Register = () => {
                 <section>
                     <h1>Kirjautuminen onnistui!</h1>
                     <p>
-                        <a href="http://localhost:3000/opettaja/hallintapaneeli">Jatka sivulle</a>
+                        <Link to="/opettaja/hallintapaneeli">Jatka sivulle</Link>
                     </p>
                 </section>
             ) : (
@@ -187,7 +188,7 @@ const Register = () => {
                     <p>
                         Onko sinulla jo tunnukset?<br />
                         <span className="line">
-                            <a href="http://localhost:3000/kirjautuminen">Kirjaudu sisään</a>
+                            <Link to="/kirjautuminen">Kirjaudu sisään</Link>
                         </span>
                     </p>
                 </section>

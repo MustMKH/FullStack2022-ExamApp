@@ -147,7 +147,7 @@ const getQuestionsForExam = async (examId) => {
     }
 }
 
-// Select answer options under specific question
+// Select answer options under specific question(s)
 
 const getAnswerOptionsForQuestion = async (questionId) => {
     const text = `SELECT * FROM answer_option WHERE question_id = ${questionId}`
@@ -156,6 +156,22 @@ const getAnswerOptionsForQuestion = async (questionId) => {
         return result.rows
     } catch (error) {
         console.log("There was an error:", error)
+    }
+}
+
+// - - - Get all answer-options for specific exam - - -
+const getAnswerOptionsForExam = async (examId) => {
+    console.log("queries.js, getAnswerOptionsForExam, examId:", examId)
+    const text = `SELECT * FROM question, answer_option WHERE question.exam_id=${examId} AND answer_option.question_id = question.id`
+    // const text = `SELECT * FROM answer_option WHERE question.exam_id = ${examId} AND answer_option.question_id = question.id`
+    try {
+        const result = await pool.query(text)
+        console.log("queries.js, getAnswerOptionsForExam, result:", result)
+        console.log("queries.js, getAnswerOptionsForExam, result.rowCount:", result.rowCount)
+        return result.rows
+    } catch (error) {
+        //console.log("There was an error:", error)
+        throw "Database error"
     }
 }
 
@@ -211,7 +227,7 @@ const getAnswerOption = async (id) => {
 
 // - - - Inserts - - -
 
-// Insert new user
+// Insert new user - delete - This is not needed!!!
 const createUser = async (params) => {
     try {
         const text = 'INSERT INTO user_data (first_name, last_name, email, password, is_admin) VALUES ($1, $2, $3, $4, $5)'
@@ -224,7 +240,7 @@ const createUser = async (params) => {
 
 // Insert new exam
 const createExam = async (params) => {
-    // console.log("queries.js createExam params.title =", params.title)
+    console.log("queries.js createExam params.title =", params.title)
     try {
         const text = 'INSERT INTO exam (title) VALUES ($1)'
         const values = [params.title]
@@ -251,8 +267,8 @@ const createQuestion = async (params) => {
 // Insert new answer option - Get exam id ???
 const createAnswerOption = async (params) => {
     try {
-        const text = "INSERT INTO answer_option (question_id, contents, is_correct) VALUES ($1, $2, $3)"
-        const values = [params.question_id, params.contents, params.is_correct]
+        const text = "INSERT INTO answer_option (question_id, contents) VALUES ($1, $2)"
+        const values = [params.question_id, params.contents]
         const result = await pool.query(text, values)
     } catch (error) {
         console.log("There was an error:", error.stack)
@@ -263,8 +279,7 @@ const createAnswerOption = async (params) => {
 
 /* TODO: add conflict clauses to updates ??? Example:
          ON CONFLICT (column_name) DO NOTHING;
-         ON CONFLICT (column_name1) DO UPDATE SET column_name2 = EXCLUDED.column_name2;
-  */
+         ON CONFLICT (column_name1) DO UPDATE SET column_name2 = EXCLUDED.column_name2; */
 
 // Update user's name and email TODO: update role, password (reset)???
 const updateUser = async (id, first_name, last_name, email) => {
@@ -277,7 +292,7 @@ const updateUser = async (id, first_name, last_name, email) => {
 }
 
 // Update exam
-const updateExam = async (id, title) => {
+const updateExamTitle = async (id, title) => {
     const text = `UPDATE exam SET title = '${title}' WHERE id=${id}`
     /*     console.log("queries.js, updateExam, parametri id =", id)
         console.log("queries.js, updateExam, parametri title =", title)
@@ -290,7 +305,7 @@ const updateExam = async (id, title) => {
 }
 
 // Update question
-const updateQuestion = async (id, contents) => {
+const updateQuestionContents = async (id, contents) => {
     const text = `UPDATE question SET contents = '${contents}' WHERE id=${id}`
     try {
         const result = await pool.query(text)
@@ -299,8 +314,18 @@ const updateQuestion = async (id, contents) => {
     }
 }
 
-// Update answer option
-const updateAnswerOption = async (id, contents, is_correct) => {
+// Update question
+const updateQuestionPoints = async (id, points) => {
+    const text = `UPDATE question SET points = '${points}' WHERE id=${id}`
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error", error)
+    }
+}
+
+// Update answer option - REDUNDANT?
+/* const updateAnswerOption = async (id, contents, is_correct) => {
     console.log("queries.js, updateAnswerOption id =", id)
     console.log("queries.js, updateAnswerOption contents =", contents)
     console.log("queries.js, updateAnswerOption is_correct =", is_correct)
@@ -310,7 +335,34 @@ const updateAnswerOption = async (id, contents, is_correct) => {
     } catch (error) {
         console.log("There was an error:", error)
     }
+} */
+
+// - - - Patches - - -
+
+// Update answer option contents
+const updateAnswerOptionContents = async (id, contents) => {
+    console.log("queries.js, updateAnswerOptionContents id =", id)
+    console.log("queries.js, updateAnswerOptionContents contents =", contents)
+    const text = (`UPDATE answer_option SET contents '${contents}' WHERE id=${id}`)
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
 }
+
+// Toggle correct answer option
+const toggleCorrectAnswerOption = async (id, is_correct) => {
+    console.log("queries.js, toggleCorrectAnswerOption id =", id)
+    console.log("queries.js, toggleCorrectAnswerOption contents =", contents)
+    const text = (`UPDATE answer_option SET is_correct '${is_correct}' WHERE id=${id}`)
+    try {
+        const result = await pool.query(text)
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
+}
+
 
 // - - - Deletes - - -
 
@@ -327,7 +379,7 @@ const deleteUser = async (id) => {
 
 // Delete exam
 const deleteExam = async (id) => {
-    /*     console.log("queries.js deleteExam parameter id =", id) */
+    // console.log("queries.js deleteExam parameter id =", id)
     const text = `DELETE FROM exam WHERE id=${id}`
     try {
         const result = await pool.query(text)
@@ -368,6 +420,7 @@ module.exports = {
     getAnswerOptions,
     getQuestionsForExam,
     getAnswerOptionsForQuestion,
+    getAnswerOptionsForExam,
     getUser,
     getExam,
     getQuestion,
@@ -377,9 +430,12 @@ module.exports = {
     createQuestion,
     createAnswerOption,
     updateUser,
-    updateExam,
-    updateQuestion,
-    updateAnswerOption,
+    updateExamTitle,
+    updateQuestionContents,
+    updateQuestionPoints,
+    // updateAnswerOption, REDUNDANT???
+    updateAnswerOptionContents,
+    toggleCorrectAnswerOption,
     deleteUser,
     deleteExam,
     deleteQuestion,

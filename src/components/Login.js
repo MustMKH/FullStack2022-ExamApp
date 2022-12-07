@@ -1,6 +1,6 @@
 // import e from 'cors';
-import React from 'react'
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'
 import axios from 'axios';
 
 const LOGIN_URL = 'https://localhost:8080/api/login'
@@ -69,7 +69,7 @@ function Login() {
                     <h1>Kirjautuminen onnistui.</h1>
                     <br />
                     <p>
-                        <a href="http://localhost:3000/opettaja/hallintapaneeli">Jatka sivulle tästä.</a>
+                        <Link to="/opettaja/hallintapaneeli">Jatka sivulle tästä.</Link>
                     </p>
                 </section>
             ) : (
@@ -83,7 +83,7 @@ function Login() {
                             type="text"
                             id="username"
                             ref={userRef}
-                            autoComplete="off"
+                            autoComplete="on"
                             onChange={(event) => setUser(event.target.value)}
                             value={user}
                             required
@@ -93,6 +93,7 @@ function Login() {
                             className="form-input"
                             type="password"
                             id="password"
+                            autoComplete="off"
                             onChange={(event) => setPwd(event.target.value)}
                             value={pwd}
                             required
@@ -101,7 +102,7 @@ function Login() {
                         <button className="login-btn">Kirjaudu</button>
                     </form>
                     <p>
-                        Ei vielä tiliä? Rekisteröidy <a href="http://localhost:3000/rekisteröinti">tästä</a>.<br />
+                        Ei vielä tiliä? Rekisteröidy <Link to="/rekisteröinti">tästä</Link>.<br />
                     </p>
                 </section>
             )}

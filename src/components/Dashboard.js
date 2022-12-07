@@ -1,25 +1,26 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import { Fragment } from 'react'
+import { Link } from 'react-router-dom'
 
-// TODO: get user id on registration and login, store in local storage?
+// TODO: get user id on registration and login
 
-const Dashboard = ({ setAuth }) => {
+// TODO: getUserInfo function
 
-  const [name, setName] = useState("")
+const Dashboard = () => {
 
-  async function getUserInfo() {
-    try {
-
-    } catch (error) {
-
-    }
-  }
+  const nimi = "Roosa"
 
   return (
     <Fragment>
       <div className='page-title'>Tenttisovelluksen tietojen hallinta</div>
       <ul>
-        <h3>Pääset muokkaamaan tenttejä, kysymyksiä ja vastausvaihtoehtoja <a href="http://localhost:3000/opettaja/tentit">tästä</a>.</h3>
-        <h3>Pääset muokkaamaan käyttäjien tietoja <a href="http://localhost:3000/opettaja/käyttäjät">tästä</a>.</h3>
+        <h1>Hei {nimi}, tervetuloa opettajan käyttöliittymään!</h1>
+        <p>Täällä voit hallita sovelluksen tietoja. Pääset muokkaamaan käyttäjiä, tenttejä, tenttien kysymyksiä ja<br />
+          vastausvaihtoehtoja alla olevista napeista.</p>
+        <Link to="/opettaja/tentit"><button className='big-btn'>Muokkaa tenttejä tästä</button></Link>
+        <Link to="/opettaja/käyttäjät"><button className='big-btn'>Muokkaa käyttäjiä tästä</button></Link>
+        {/*         <h3>Pääset muokkaamaan tenttejä, kysymyksiä ja vastausvaihtoehtoja <Link to="/opettaja/tentit">tästä</Link></h3>
+        <h3>Pääset muokkaamaan käyttäjien tietoja <Link to="/opettaja/käyttäjät">tästä</Link></h3> */}
+
       </ul>
     </Fragment>
   )

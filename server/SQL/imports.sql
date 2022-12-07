@@ -1,0 +1,2 @@
+-- \i /Users/musto/OneDrive/Tiedostot/Ohjelmointi/ReactApps/tenttisovellus/server/SQL/question.sql
+-- \i /Users/musto/OneDrive/Tiedostot/Ohjelmointi/ReactApps/tenttisovellus/server/SQL/answer_option.sql

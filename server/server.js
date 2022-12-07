@@ -1,11 +1,11 @@
-// const bodyparser = require('body-parser')
-const fs = require('fs')
 const https = require('https')
+const fs = require('fs')
 const cors = require('cors')
 const port = process.env.PORT || 8080
 const express = require('express')
 const app = express()
 const router = require('./routes')
+// const bodyparser = require('body-parser')
 /* const { Pool } = require('pg')
 const pool = new Pool({
     user: 'postgres',
