@@ -178,9 +178,8 @@ main {
   background-color: var(--primary);
   font-size: small;
   margin-left: 30px;
-  margin-top: 24px;
   padding: 10px;
-  outline-color: gray;
+  outline-color: darkgray;
   outline-style: auto;
   color: var(--light);
   letter-spacing: 0.1rem;
@@ -191,10 +190,22 @@ main {
   transform: scale(1.02);
 }
 
+.create-exam-event-btn {
+  background-color: darkgray;
+  font-size: small;
+  margin-left: 30px;
+  padding: 10px;
+  outline-color: gray;
+  outline-style: auto;
+  color: gray;
+  letter-spacing: 0.1rem;
+}
+
 .plus-btn,
 .minus-btn,
 .trash-btn,
-.check-square {
+.check-square,
+.check-square-incorrect {
   margin-left: 2px;
   background: transparent;
   color: white;
@@ -203,6 +214,19 @@ main {
   border: 1px;
   border-color: var(--light);
   cursor: pointer;
+}
+
+/* .is-correct-checkbox:checked {
+  background-color: green;
+}
+
+.is-correct-checkbox:checked::before {
+  background-color: red;
+} */
+
+.small-btn :disabled {
+  background-color: var(--primary);
+  color: gray;
 }
 
 .plus-btn :hover,

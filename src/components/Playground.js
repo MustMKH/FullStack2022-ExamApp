@@ -1,11 +1,14 @@
 import { useEffect, useReducer } from 'react'
 import dataService from '../service/dataService'
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import Question from './Question'
+
+// !!! FIND HARD CODED
 
 /* TODO: "Luo tenttitapahtuma" event
     - step 1: check if all questions have at least 2 answer options
       and at least 1 option is checked as correct
+    - step 3: make "Luo tenttitapahtuma" button active when the above conditions are met
     - step 2: create a copy of the finished exam for students to take
     - step 3: require additional informaton such as exam date and time
     - step 4 (optional): choose students/groups required to take exam */
@@ -34,7 +37,7 @@ const ACTION = {
     QUESTION_ADDED: "QUESTION_ADDED",
     ANSWER_OPTION_ADDED: "ANSWER_OPTION_ADDED",
     QUESTION_CONTENTS_EDITED: "QUESTION_CONTENTS_EDITED",
-    ANSWER_OPTION_EDITED: "ANSWER_OPTION_EDITED",
+    ANSWER_OPTION_CONTENTS_EDITED: "ANSWER_OPTION_CONTENTS_EDITED",
     QUESTION_POINTS_EDITED: "QUESTION_POINTS_EDITED",
     TOGGLE_CORRECT_ANSWER: "TOGGLE_CORRECT_ANSWER",
     QUESTION_DELETED: "QUESTION_DELETED",
@@ -88,22 +91,24 @@ const reducer = (state, action) => {
             console.log("Failed to fetch answer options.")
             return { ...state, failedToFetchAnswerOptions: true, answerOptionsFetchInitiated: false }
 
+        // - - -   E D I T   E X A M S   -   U N D E R   C O N S T R U C T I O N   !!!   - - -
         case ACTION.EXAM_RENAMED: {
             // USE PATCH TO UPDATE TITLE ONLY !!!
             console.log("Reducer called, exam renamed", action);
             // PREVIOUS VERSION: return {...state, name: action.payload.name};
             const stateCopy = { ...state, saveRequired: true }
-            stateCopy.exams[action.payload.index].title = action.payload.title
-            return stateCopy;
+            // stateCopy.exams[action.payload.index].title = action.payload.title
+            return stateCopy
         }
 
         case ACTION.QUESTION_ADDED: {
             console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, action", action)
             console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, action.payload", action.payload)
-            const stateCopy = JSON.parse(JSON.stringify(state))
-            console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, stateCopy", stateCopy)
-            stateCopy.questions.push({ contents: "UUSI KYSYMYS - MUOKKAA TÄSTÄ" })
-            return stateCopy
+            console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, state.questions", state.questions)
+            // const stateCopy = JSON.parse(JSON.stringify(state))
+            // console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, stateCopy", stateCopy)
+            state.questions.push({ contents: "UUSI KYSYMYS - MUOKKAA TÄSTÄ" })
+            return state
         }
 
         case ACTION.ANSWER_OPTION_ADDED: {
@@ -113,63 +118,69 @@ const reducer = (state, action) => {
             return stateCopy */
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, action", action)
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, action", action.payload)
-            const stateCopy = JSON.parse(JSON.stringify(state))
-            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, stateCopy", stateCopy)
-            stateCopy.answerOptions.push({ contents: "UUSI VASTAUSVAIHTOEHTO - MUOKKAA TÄSTÄ" })
-            return stateCopy
+            // const stateCopy = JSON.parse(JSON.stringify(state))
+            // console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, stateCopy", stateCopy)
+            state.answerOptions.push({ contents: "UUSI VASTAUSVAIHTOEHTO - MUOKKAA TÄSTÄ" })
+            return state
         }
 
         case ACTION.QUESTION_CONTENTS_EDITED: {
             console.log("Reducer called, question edited.", action);
             const stateCopy = { ...state, saveRequired: true }
-            stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].contents = action.payload.contents
+            // stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].contents = action.payload.contents
             return stateCopy
         }
 
         case ACTION.QUESTION_POINTS_EDITED: {
-
+            console.log("Reducer called, question points edited.", action)
+            const stateCopy = { ...state, saveRequired: true }
+            return stateCopy
         }
 
         // TODO !!!
         case ACTION.QUESTION_DELETED: {
             console.log("Reducer called, question deleted.", action);
             return {
-                ...state,
-                exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
-                    ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
-                } : exam)),
+                /*                 ...state,
+                                exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
+                                    ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
+                                } : exam)), */
                 saveRequired: true
             }
         }
 
-
-        case ACTION.ANSWER_OPTION_EDITED: {
-            console.log("Reducer called, answer option edited", action);
-            const stateCopy = { ...state, saveRequired: true }
-            // kokeile viimeisiin sulkeisiin [action.payload.index]:
-            stateCopy.
-                exams[action.payload.examIndex].
-                questions[action.payload.questionIndex].
-                answers[action.payload.answerIndex].
-                contents = action.payload.contents
-            return stateCopy
+        // TODO !!!
+        case ACTION.ANSWER_OPTION_CONTENTS_EDITED: {
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action", action)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action.payload", action.payload)
+            return { ...state }
         }
 
         // TODO !!!
         case ACTION.TOGGLE_CORRECT_ANSWER: {
-
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action", action)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action.payload", action.payload)
+            return { ...state }
         }
 
         // TODO !!!
         case ACTION.ANSWER_OPTION_DELETED: {
-            console.log("Reducer called, answer option deleted.", action);
-            return {
-                ...state,
-                exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
-                    ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
-                } : exam)),
-                saveRequired: true
-            }
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, action", action)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, action", action.payload)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, action", action.payload.answerOptionId)
+            // const answerOptionsCopy = state.answerOptions.filter((answerOption => answerOption.id !== action.payload.answerOptionId))
+            const stateCopy = { ...state }
+            stateCopy.answerOptions.filter((answerOption => answerOption.id !== action.payload.answerOptionId))
+            // state.answerOptions.filter((answerOption => answerOption.id !== action.payload.answerOptionId))
+            /* stateCopy = {
+            ...state,
+            answerOptions: state.answerOptions.filter((answerOption, i) => i !== action.payload.answerOptionIndex),
+            saveRequired: true
+        } */
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, state.exam", state.exam)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, state.questions", state.questions)
+            // console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, answerOptionsCopy", answerOptionsCopy)
+            return stateCopy
         }
 
         case ACTION.SAVE_REQUIRED:
@@ -187,7 +198,9 @@ const reducer = (state, action) => {
 }
 
 const Playground = () => {
-    let examId = 50 // !!! HARD CODED !!!
+    // const { id: tenttiId } = useParams();
+    let { tentti: examId } = useParams()
+    console.log(" - - - EXAM ID - - -", examId) // !!! HARD CODED !!!
     // try useParams (?) react-router-dom
     /*     let examId = ((window.location.href).toString())
         examId = examId.split("/").pop() */
@@ -226,8 +239,6 @@ const Playground = () => {
 
 
     useEffect(() => {
-        const examId = 50
-        console.log("ExamData.js, examId:", examId)
 
         // - - - Get selected exam - - -
         const getExam = async () => {
@@ -252,7 +263,6 @@ const Playground = () => {
                 if (result.length > 0) {
                     dispatch({ type: ACTION.QUESTIONS_RETRIEVED, payload: result })
                 } else {
-                    console.log("TULLAANKO TÄNNE? getQuestions, elseen")
                     dispatch({ type: ACTION.NO_QUESTIONS_FOUND, payload: { noQuestionsFound: true } })
                 }
             } catch (error) {
@@ -295,7 +305,36 @@ const Playground = () => {
             const response = await dataService.addQuestion(examId)
             dispatch({
                 type: ACTION.QUESTION_ADDED,
-                payload: { examIndex: examIndex }
+                payload: { exam_id: examId }
+            })
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
+    /* const addAnswerOption = async () => {
+        console.log("AnswerOption.js, addAnswerOption")
+        try {
+            const response = await dataService.addAnswerOption(questionId)
+            props.dispatch({
+                type: ACTION.ANSWER_OPTION_ADDED,
+                payload: { questionIndex: props.questionIndex }
+            })
+        } catch (error) {
+            console.error(error.message)
+        }
+    } */
+    const editExamTitle = async (event) => {
+        try {
+            console.log("ExamData.js, editExamTitle, event.target.value:", event.target.value)
+            const examTitle = event.target.value
+            const response = await dataService.updateExamTitle(examId, examTitle)
+            dispatch({
+                type: ACTION.EXAM_RENAMED,
+                payload: {
+                    title: examTitle,
+                    // examIndex: examIndex,
+                    examId: examId
+                }
             })
         } catch (error) {
             console.error(error.message)
@@ -321,26 +360,25 @@ const Playground = () => {
             </div>
 
             <div>
-                <h1 className='main-title'>Tentin otsikko:</h1><button className='small-btn' >Luo tenttitapahtuma</button>
+                <h1 className='main-title'>Tentin otsikko:</h1>
                 <div>
-                    <input className="input-exam-title" type="text" onChange={(event) => {
-                        // TODO: ADD AXIOS REQUEST HERE WITH TRY/CATCH!
-                        dispatch({ type: "EXAM_RENAMED", payload: { title: event.target.value } })
-                    }} placeholder={appData.answerOptionsRetrieved && appData.exam.title} />
-                </div>
+                    <input className="input-exam-title" type="text" onChange={editExamTitle} placeholder={appData.examRetrieved && appData.exam.title} />
+                </div><h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3>
                 <div>
-                    <h3 className='section-title'>Kysymykset:</h3>
+                    <h2 className='section-title'>Kysymykset:</h2>
                     <button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
                     <ol className='question-items'>
                         {/* {appData.examDataRetrieved && appData.questions.map((question, index) => <Question questionIndex={index} question={question} dispatch={dispatch} />)} */}
-                        {appData.answerOptionsRetrieved && appData.questions.map((question, index) =>
+                        {appData.questionsRetrieved && appData.questions.map((question, index) =>
                             <li key={index}>
-                                <Question exam={appData.exam} questions={appData.questions} question={question} questionIndex={index} answerOptions={appData.answerOptions} dispatch={dispatch} />
+                                <Question answerOptionsRetrieved={appData.answerOptionsRetrieved} exam={appData.exam} questions={appData.questions} question={question} questionIndex={index} answerOptions={appData.answerOptions} dispatch={dispatch} />
                             </li>)}
                     </ol><button className='small-btn' >Lisää uusi kysymys</button>
 
-                </div>
 
+                </div>
+            </div>
+            <div><h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3>
                 <div>
                     <p><Link className='router-link' to='/opettaja/hallintapaneeli'>Takaisin hallintapaneeliin</Link></p>
                     <p><Link className='router-link' to='/opettaja/tentit'>Siirry tenttilistaan</Link></p>

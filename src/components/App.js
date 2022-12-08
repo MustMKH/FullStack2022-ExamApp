@@ -34,14 +34,14 @@ const App = () => {
           <Routes>
             {/* - - - PUBLIC ROUTES - - - */}
 
-            <Route exact path='/opettaja/tentit/50' element={<Playground />} />
+            {/* <Route exact path='/opettaja/tentit/50' element={<Playground />} /> */}
             <Route exact path='/' element={<Home />} />
             <Route exact path='/kirjautuminen' element={<Login />} />
             <Route exact path='/rekisteröinti' element={<Register />} />
             {/* - - - PROTECTED ROUTES: OPETTAJA - - - */}
             <Route exact path='/opettaja/hallintapaneeli' element={<Dashboard />} />
             <Route exact path='/opettaja/tentit' element={<Exams />} />
-            {/* <Route path='/opettaja/tentit/:tentti' element={<EditExam />} /> */}
+            <Route path='/opettaja/tentit/:tentti' element={<Playground />} />
             <Route exact path='/opettaja/käyttäjät' element={<Users />} />
             {/* - - - TODO: PROTECTED ROUTES: OPPILAS - - -
             <Route path='/tentit' element={<ScheduledExamsAndExamResults />} />

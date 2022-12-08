@@ -196,7 +196,6 @@ router.get('/answer_options', isAdmin, asyncHandler(async (req, res) => {
 }))
 
 // - - - Get questions under specific exam - - -
-
 router.get('/exams/:exam_id/questions', isAdmin, asyncHandler(async (req, res) => {
     const questions = await queries.getQuestionsForExam(req.params.exam_id)
     if (questions.length > 0) {
@@ -207,7 +206,6 @@ router.get('/exams/:exam_id/questions', isAdmin, asyncHandler(async (req, res) =
 }))
 
 // - - - Get answer options under specific question (req.params) / DELETE!!! - - -
-
 router.get('/questions/:question_id/answer_options', isAdmin, asyncHandler(async (req, res) => {
     const answerOptions = await queries.getAnswerOptionsForQuestion(req.params.question_id)
     if (answerOptions.length > 0) {
@@ -218,7 +216,6 @@ router.get('/questions/:question_id/answer_options', isAdmin, asyncHandler(async
 }))
 
 // - - - Get answer options under specific question (req.body) / DELETE - - -
-
 router.get('/answer_options', isAdmin, asyncHandler(async (req, res) => {
     const answerOptions = await queries.getAnswerOptionsForQuestion(req.body.question_id)
     if (answerOptions.length > 0) {
@@ -255,7 +252,6 @@ router.get('/users/:id', isAdmin, asyncHandler(async (req, res) => {
 // Get specific exam
 router.get('/exams/:id', isAdmin, asyncHandler(async (req, res) => {
     const exam = await queries.getExam(req.params.id)
-    // console.log(exam)
     if (exam) {
         res.json(exam)
     } else {
@@ -266,7 +262,6 @@ router.get('/exams/:id', isAdmin, asyncHandler(async (req, res) => {
 // Get specific question
 router.get('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
     const question = await queries.getQuestion(req.params.id)
-    // console.log(question)
     if (question) {
         res.json(question)
     } else {
@@ -304,7 +299,7 @@ router.get('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
 
 // Create new exam
 router.post('/exams', isAdmin, asyncHandler(async (req, res) => {
-    console.log("routes.js - Ceate new exam - req.body.title:", req.body.title)
+    console.log("routes.js, createExam, req.body.title:", req.body.title)
     if (req.body.title) {
         const exam = await queries.createExam({
             title: req.body.title
@@ -317,8 +312,8 @@ router.post('/exams', isAdmin, asyncHandler(async (req, res) => {
 
 // Create new question - use req.params.exam_id (not req.body.exam_id) !!!
 router.post('/questions', isAdmin, asyncHandler(async (req, res) => {
-    console.log("routes.js - Ceate new question - req.body.exam_id:", req.body.exam_id)
-    console.log("routes.js - Ceate new question - req.body.contents:", req.body.contents)
+    console.log("routes.js, createQuestion, req.body.exam_id:", req.body.exam_id)
+    console.log("routes.js, createQuestion, req.body.contents:", req.body.contents)
     if (req.body.exam_id && req.body.contents) {
         const question = await queries.createQuestion({
             exam_id: req.body.exam_id,
@@ -360,15 +355,10 @@ router.put('/users/:id', isAdmin, asyncHandler(async (req, res) => {
 // Update exam
 router.put('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
     const exam = await queries.getExam(req.params.id)
-    console.log("routes.js, router.put, 'exams/:id', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'exams/:id', exam =", exam)
+    console.log("routes.js, getExam, req.params.id =", req.params.id)
+    console.log("routes.js, getExam, exam =", exam)
     if (exam) {
         await queries.updateExamTitle(req.params.id, req.body.title)
-        /* For a put request, it is convention to send in the status code 204, which means no content
-        This means that everything went OK but there is nothing to send back
-        We need another way to end the request or the server will just hang indefinitely
-        and our application will appear to be broken. For this reason, we need to use the express
-        end() method: */
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Exam not found" })
@@ -376,22 +366,23 @@ router.put('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
 }))
 
 // Update question points
-router.put('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
+router.put('/questions/:id/points', isAdmin, asyncHandler(async (req, res) => {
+    console.log("KUKKULUURUU")
     const question = await queries.getQuestion(req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.body.points =", req.body.points)
+    console.log("routes.js, getQuestion, req.params.id =", req.params.id)
+    console.log("routes.js, getQuestion, req.body.points =", req.body.points)
     if (question) {
-        await queries.updateQuestionPoints(req.params.id, req.body.contents)
+        await queries.updateQuestionPoints(req.params.id, req.body.points)
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Question not found" })
     }
 }))
 // Update question contents
-router.put('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
+router.put('/questions/:id/contents', isAdmin, asyncHandler(async (req, res) => {
+    console.log("routes.js, updateQuestionContents, req.params.id =", req.params.id)
+    console.log("routes.js, updateQuestionContents, req.body.contents =", req.body.contents)
     const question = await queries.getQuestion(req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'questions/:id', req.body.contents =", req.body.contents)
     if (question) {
         await queries.updateQuestionContents(req.params.id, req.body.contents)
         res.status(204).end()
@@ -400,29 +391,28 @@ router.put('/questions/:id', isAdmin, asyncHandler(async (req, res) => {
     }
 }))
 
-// Update answer option - REDUNDANT ???
-/* router.put('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
+// Update answer option contents
+router.put('/answer_options/:id/contents', isAdmin, asyncHandler(async (req, res) => {
+    console.log("routes.js, updateAnswerOptionContents, req.params.id =", req.params.id)
+    console.log("routes.js, updateAnswerOptionContents, req.body.contents =", req.body.contents)
     const answerOption = await queries.getAnswerOption(req.params.id)
-    console.log("routes.js, router.put, 'answerOption', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'answerOption', req.body.contents =", req.body.contents)
-    console.log("routes.js, router.put, 'answerOption', req.body.is_correct =", req.body.is_correct)
     // console.log(req.body)
     if (answerOption) {
-        await queries.updateAnswerOption(req.params.id, req.body.contents, req.body.is_correct)
+        await queries.updateAnswerOptionContents(req.params.id, req.body.contents)
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Answer option not found" })
     }
-})) */
+}))
 
-// Patch answer option
-router.put('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
-    const answerOption = await queries.updateAnswerOptionContents(req.params.id)
-    console.log("routes.js, router.put, 'AnswerOptionTitle', req.params.id =", req.params.id)
-    console.log("routes.js, router.put, 'AnswerOptionTitle', req.body.contents =", req.body.contents)
+// Toggle correct answer
+router.put('/answer_options/:id/is_correct', isAdmin, asyncHandler(async (req, res) => {
+    console.log("routes.js, toggleCorrectAnswer, req.params.id =", req.params.id)
+    console.log("routes.js, toggleCorrectAnswer, req.body.contents =", req.body.is_correct)
+    const answerOption = await queries.getAnswerOption(req.params.id)
     // console.log(req.body)
     if (answerOption) {
-        await queries.updateAnswerOptionContents(req.params.id, req.body.contents, req.body.is_correct)
+        await queries.toggleCorrectAnswer(req.params.id, req.body.is_correct)
         res.status(204).end()
     } else {
         res.status(404).json({ message: "Answer option not found" })
@@ -434,9 +424,9 @@ router.put('/answer_options/:id', isAdmin, asyncHandler(async (req, res) => {
 // Delete user
 router.delete('/users/:id', isAdmin, asyncHandler(async (req, res, next) => {
     const user = await queries.getUser(req.params.id)
-    console.log("routes.js, router.delete, '/users/:id', req.params.id=", req.params.id)
-    console.log("routes.js, router.delete, '/users/:id', user=", user)
-    console.log("routes.js, router.delete, '/users/:id', user.id=", user.id)
+    console.log("routes.js, getUser, req.params.id=", req.params.id)
+    console.log("routes.js, getUser, user=", user)
+    console.log("routes.js, getUser, user.id=", user.id)
     if (user) {
         await queries.deleteUser(user.id)
         // because we're only sending back a status and no response, we need to use the end() method:
@@ -449,9 +439,9 @@ router.delete('/users/:id', isAdmin, asyncHandler(async (req, res, next) => {
 // Delete exam
 router.delete('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
     const exam = await queries.getExam(req.params.id)
-    /*     console.log("routes.js, router.delete, '/exams/:id', req.params.id=", req.params.id)
-        console.log("routes.js, router.delete, '/exams/:id', exam=", exam)
-        console.log("routes.js, router.delete, '/exams/:id', exam.id=", exam.id) */
+    /*     console.log("routes.js, deleteExam, req.params.id=", req.params.id)
+        console.log("routes.js, deleteExam, exam=", exam)
+        console.log("routes.js, deleteExam, exam.id=", exam.id) */
     if (exam) {
         // const id = req.body.id
         await queries.deleteExam(exam.id)

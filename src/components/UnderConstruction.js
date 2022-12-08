@@ -1,4 +1,4 @@
-import picture from './images/image-222.png'
+/* import picture from './images/image-222.png'
 
 const UnderConstruction = () => {
     return (
@@ -9,4 +9,4 @@ const UnderConstruction = () => {
     )
 }
 
-export default UnderConstruction
+export default UnderConstruction */

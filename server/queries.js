@@ -166,7 +166,7 @@ const getAnswerOptionsForExam = async (examId) => {
     // const text = `SELECT * FROM answer_option WHERE question.exam_id = ${examId} AND answer_option.question_id = question.id`
     try {
         const result = await pool.query(text)
-        console.log("queries.js, getAnswerOptionsForExam, result:", result)
+        // console.log("queries.js, getAnswerOptionsForExam, result:", result)
         console.log("queries.js, getAnswerOptionsForExam, result.rowCount:", result.rowCount)
         return result.rows
     } catch (error) {
@@ -293,10 +293,9 @@ const updateUser = async (id, first_name, last_name, email) => {
 
 // Update exam
 const updateExamTitle = async (id, title) => {
+    console.log("queries.js, updateExam, id =", id)
+    console.log("queries.js, updateExam, title =", title)
     const text = `UPDATE exam SET title = '${title}' WHERE id=${id}`
-    /*     console.log("queries.js, updateExam, parametri id =", id)
-        console.log("queries.js, updateExam, parametri title =", title)
-        console.log("queries.js, updateExam, text =", text) */
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -306,6 +305,8 @@ const updateExamTitle = async (id, title) => {
 
 // Update question
 const updateQuestionContents = async (id, contents) => {
+    console.log("queries.js, updateQuestionPoints id =", id)
+    console.log("queries.js, updateQuestionPoints contents =", contents)
     const text = `UPDATE question SET contents = '${contents}' WHERE id=${id}`
     try {
         const result = await pool.query(text)
@@ -316,6 +317,8 @@ const updateQuestionContents = async (id, contents) => {
 
 // Update question
 const updateQuestionPoints = async (id, points) => {
+    console.log("queries.js, updateQuestionPoints id =", id)
+    console.log("queries.js, updateQuestionPoints points =", points)
     const text = `UPDATE question SET points = '${points}' WHERE id=${id}`
     try {
         const result = await pool.query(text)
@@ -324,26 +327,11 @@ const updateQuestionPoints = async (id, points) => {
     }
 }
 
-// Update answer option - REDUNDANT?
-/* const updateAnswerOption = async (id, contents, is_correct) => {
-    console.log("queries.js, updateAnswerOption id =", id)
-    console.log("queries.js, updateAnswerOption contents =", contents)
-    console.log("queries.js, updateAnswerOption is_correct =", is_correct)
-    const text = (`UPDATE answer_option SET contents = '${contents}', is_correct = '${is_correct}' WHERE id=${id}`)
-    try {
-        const result = await pool.query(text)
-    } catch (error) {
-        console.log("There was an error:", error)
-    }
-} */
-
-// - - - Patches - - -
-
 // Update answer option contents
 const updateAnswerOptionContents = async (id, contents) => {
     console.log("queries.js, updateAnswerOptionContents id =", id)
     console.log("queries.js, updateAnswerOptionContents contents =", contents)
-    const text = (`UPDATE answer_option SET contents '${contents}' WHERE id=${id}`)
+    const text = (`UPDATE answer_option SET contents = '${contents}' WHERE id=${id}`)
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -352,10 +340,10 @@ const updateAnswerOptionContents = async (id, contents) => {
 }
 
 // Toggle correct answer option
-const toggleCorrectAnswerOption = async (id, is_correct) => {
-    console.log("queries.js, toggleCorrectAnswerOption id =", id)
-    console.log("queries.js, toggleCorrectAnswerOption contents =", contents)
-    const text = (`UPDATE answer_option SET is_correct '${is_correct}' WHERE id=${id}`)
+const toggleCorrectAnswer = async (id, is_correct) => {
+    console.log("queries.js, toggleCorrectAnswer id =", id)
+    console.log("queries.js, toggleCorrectAnswer is_correct =", is_correct)
+    const text = (`UPDATE answer_option SET is_correct = '${is_correct}' WHERE id=${id}`)
     try {
         const result = await pool.query(text)
     } catch (error) {
@@ -433,9 +421,8 @@ module.exports = {
     updateExamTitle,
     updateQuestionContents,
     updateQuestionPoints,
-    // updateAnswerOption, REDUNDANT???
     updateAnswerOptionContents,
-    toggleCorrectAnswerOption,
+    toggleCorrectAnswer,
     deleteUser,
     deleteExam,
     deleteQuestion,

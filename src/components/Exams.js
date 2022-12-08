@@ -93,7 +93,7 @@ const Exams = () => {
                             {exams.map((exam, i) =>
                                 <li key={i}>
                                     {/* TODO: Onclick to edit specific exam: - params={{ id: exam.id }} */}
-                                    <Link to={`/opettaja/tentit/${exam.id}`}><button className="big-btn"> Tentti {i + 1}: {exam?.title}</button></Link>
+                                    <Link to={`/opettaja/tentit/${exam.id}`} ><button className="big-btn"> Tentti {i + 1}: {exam?.title}</button></Link>
                                     <button className='trash-btn' onClick={() => { isLoading ? <Spinner /> : deleteExam(exam?.id) }} disabled={isLoading}>
                                         <i className="fas fa-solid fa-trash"></i>
                                     </button>

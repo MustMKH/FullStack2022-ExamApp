@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { response } from 'express'
 
 const URL = 'https://localhost:8080/api'
 const token = localStorage.getItem('token')
@@ -44,7 +43,8 @@ const getAnswerOptionsForExam = async (examId) => {
 
 // - - - Create new question - - -
 const addQuestion = async (examId) => {
-    const reponse = await axios.post(`${URL}/questions`, {
+    console.log("dataService.js, addQuestion, examId:", examId)
+    const response = await axios.post(`${URL}/questions`, {
         contents: "UUSI KYSYMYS - MUOKKAA TÄSTÄ",
         exam_id: examId
     }, setHeaders)
@@ -65,6 +65,8 @@ const addAnswerOption = async (questionId) => {
 // - - - Update exam title - - -
 
 const updateExamTitle = async (examId, examTitle) => {
+    console.log("dataService.js, updateExamTitle, examId:", examId)
+    console.log("dataService.js, updateExamTitle, examTitle:", examTitle)
     const response = await axios.put(`${URL}/exams/${examId}`, {
         title: examTitle
     }, setHeaders)
@@ -75,40 +77,52 @@ const updateExamTitle = async (examId, examTitle) => {
 // - - - Update question contents - - -
 
 const updateQuestionContents = async (questionId, questionContents) => {
-    const response = await axios.put(`${URL}/questions/${questionId}`, {
+    console.log("dataService.js, updateQuestionContents, questionId:", questionId);
+    console.log("dataService.js, updateQuestionContents, questionContents:", questionContents);
+    const response = await axios.put(`${URL}/questions/${questionId}/contents`, {
         contents: questionContents
     }, setHeaders)
-    console.log("dataService.js, updateQuestionContents, response.data:", response.data)
-    return response.data
 }
 
 // - - - Update question points - - -
 
 const updateQuestionPoints = async (questionId, questionPoints) => {
-    const response = await axios.put(`${URL}/questions/${questionId}`, {
+    console.log("dataService.js, updateQuestionPoints, questionId:", questionId);
+    console.log("dataService.js, updateQuestionPoints, questionPoints:", questionPoints);
+    const response = await axios.put(`${URL}/questions/${questionId}/points`, {
         points: questionPoints
     }, setHeaders)
-    console.log("dataService.js, updateQuestionPoints, response.data:", response.data)
-    return response.data
 }
 
 // - - - Update answer option contents - - -
 
 const updateAnswerOptionContents = async (answerOptionId, answerOptionContents) => {
-    const response = await axios.put(`${URL}/answer_options/${answerOptionId}`, {
+    console.log("dataService.js, updateAnswerOptionContents, answerOptionId:", answerOptionId);
+    console.log("dataService.js, updateAnswerOptionContents, answerOptionContents:", answerOptionContents);
+    const response = await axios.put(`${URL}/answer_options/${answerOptionId}/contents`, {
         contents: answerOptionContents
-    }, setHeaders)
-    console.log("dataService.js, updateAnswerOptionContents, response.data:", response.data)
-    return response.data
+    }, setHeaders
+    )
+    // This is an update, no response.data reveived:
+    /* console.log("dataService.js, updateAnswerOptionContents, response.data:", response.data)
+    return response.data */
 }
 
 // - - - Toggle correct answer option - - -
 
-const toggleCorrectAnswerOption = async (answerOptionId, isCorrect) => {
-    const response = await axios.put(`${URL}/answer_options/${answerOptionId}`, {
+const toggleCorrectAnswer = async (answerOptionId, isCorrect) => {
+    const response = await axios.put(`${URL}/answer_options/${answerOptionId}/is_correct`, {
         is_correct: isCorrect
     }, setHeaders)
-    console.log("dataService.js, toggleCorrectAnswerOption, response.data:", response.data)
+    console.log("dataService.js, toggleCorrectAnswer, response.data:", response.data)
+    return response.data
+}
+
+// - - - Delete answer option - - -
+
+const deleteAnswerOption = async (answerOptionId) => {
+    const response = await axios.delete(`${URL}/answer_options/${answerOptionId}`, setHeaders)
+    console.log("dataService.js, deleteAnswerOption, response.data:", response.data)
     return response.data
 }
 
@@ -125,7 +139,9 @@ const dataService = {
     updateQuestionContents,
     updateQuestionPoints,
     updateAnswerOptionContents,
-    toggleCorrectAnswerOption,
+    toggleCorrectAnswer,
+
+    deleteAnswerOption
 }
 
 export default dataService
