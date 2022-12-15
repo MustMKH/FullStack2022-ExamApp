@@ -116,6 +116,7 @@ router.post('/login', async (req, res, next) => {
             data: {
                 userId: existingUser.id,
                 email: existingUser.email,
+                role: existingUser.role,
                 token: token
             }
         })
@@ -128,10 +129,10 @@ router.post('/login', async (req, res, next) => {
 const isAdmin = async (req, res, next) => {
     let admin
     try {
-        // console.log("routes.js, isAdmin, argument req.decoded?.email =", req.decoded.email)
+        console.log("routes.js, isAdmin, argument req.decoded?.email =", req.decoded.email)
         admin = await queries.adminCheck(req.decoded.email)
         if (admin) {
-            // console.log("routes.js, isAdmin, if, admin =", admin)
+            console.log("routes.js, isAdmin, if, admin =", admin)
             next()
         } else {
             res.status(403).send("Unauthorized access.")
@@ -145,6 +146,8 @@ const isAdmin = async (req, res, next) => {
 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
+    console.log("Data is being requested from the server. Authorization required.")
+    console.log("routes.js, verifyToken, token:", token)
     // Authorization: 'Bearer TOKEN'
     if (!token) {
         res.status(200).json({ success: false, message: "Error! Token was not provided." })
@@ -169,11 +172,15 @@ router.use(verifyToken)
 // - - - Get list of items - - -
 
 // Get list of users
-// router.get('/users', asyncHandler, isAdmin (async (req,res) => {
 router.get('/users', isAdmin, asyncHandler(async (req, res) => {
-    /*     console.log("routes.js, router.get, '/users, req.decoded =", req.decoded)
-        console.log("Data is being requested from the server. Authorization required.") */
+    console.log("routes.js, get users")
     const users = await queries.getUsers()
+    res.json(users)
+}))
+
+router.get('/staff', isAdmin, asyncHandler(async (req, res) => {
+    console.log("routes.js, get staff")
+    const users = await queries.getStaff()
     res.json(users)
 }))
 
@@ -310,7 +317,7 @@ router.post('/exams', isAdmin, asyncHandler(async (req, res) => {
     }
 }))
 
-// Create new question - use req.params.exam_id (not req.body.exam_id) !!!
+// Create new question - use req.params.exam_id (not req.body.exam_id) ???
 router.post('/questions', isAdmin, asyncHandler(async (req, res) => {
     console.log("routes.js, createQuestion, req.body.exam_id:", req.body.exam_id)
     console.log("routes.js, createQuestion, req.body.contents:", req.body.contents)
@@ -367,7 +374,6 @@ router.put('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
 
 // Update question points
 router.put('/questions/:id/points', isAdmin, asyncHandler(async (req, res) => {
-    console.log("KUKKULUURUU")
     const question = await queries.getQuestion(req.params.id)
     console.log("routes.js, getQuestion, req.params.id =", req.params.id)
     console.log("routes.js, getQuestion, req.body.points =", req.body.points)
@@ -439,11 +445,8 @@ router.delete('/users/:id', isAdmin, asyncHandler(async (req, res, next) => {
 // Delete exam
 router.delete('/exams/:id', isAdmin, asyncHandler(async (req, res, next) => {
     const exam = await queries.getExam(req.params.id)
-    /*     console.log("routes.js, deleteExam, req.params.id=", req.params.id)
-        console.log("routes.js, deleteExam, exam=", exam)
-        console.log("routes.js, deleteExam, exam.id=", exam.id) */
+    console.log("routes.js, deleteExam, req.params.id=", req.params.id)
     if (exam) {
-        // const id = req.body.id
         await queries.deleteExam(exam.id)
         res.status(204).end()
     } else {

@@ -8,6 +8,28 @@ const setHeaders = {
     }
 }
 
+// - - - Get users - - -
+const getUsers = async () => {
+    const response = await axios.get(`${URL}/users`, setHeaders)
+    console.log("dataService.js, getUsers, response.data:", response.data)
+    return response.data
+}
+
+// - - - Get staff - - -
+const getStaff = async () => {
+    const response = await axios.get(`${URL}/staff`, setHeaders)
+    console.log("dataService.js, getStaff, response.data:", response.data)
+    return response.data
+}
+
+// - - - Get exams - - -
+const getExams = async () => {
+    const response = await axios.get(`${URL}/exams`, setHeaders)
+    console.log("dataService.js, token", token)
+    console.log("dataService.js, getExams, response.data:", response.data)
+    return response.data
+}
+
 // - - - Get selected exam - - -
 const getExam = async (examId) => {
     const response = await axios.get(`${URL}/exams/${examId}`, setHeaders)
@@ -41,6 +63,16 @@ const getAnswerOptionsForExam = async (examId) => {
     return response.data
 }
 
+// - - - Create new exam - - -
+const addExam = async () => {
+    console.log("dataService.js, addExam")
+    const response = await axios.post(`${URL}/exams`, {
+        title: "UUSI TENTTI - MUOKKAA TÄSTÄ"
+    }, setHeaders)
+    console.log("dataService.js, addExam, response.data:", response.data)
+    return response.data
+}
+
 // - - - Create new question - - -
 const addQuestion = async (examId) => {
     console.log("dataService.js, addQuestion, examId:", examId)
@@ -63,7 +95,6 @@ const addAnswerOption = async (questionId) => {
 }
 
 // - - - Update exam title - - -
-
 const updateExamTitle = async (examId, examTitle) => {
     console.log("dataService.js, updateExamTitle, examId:", examId)
     console.log("dataService.js, updateExamTitle, examTitle:", examTitle)
@@ -75,7 +106,6 @@ const updateExamTitle = async (examId, examTitle) => {
 }
 
 // - - - Update question contents - - -
-
 const updateQuestionContents = async (questionId, questionContents) => {
     console.log("dataService.js, updateQuestionContents, questionId:", questionId);
     console.log("dataService.js, updateQuestionContents, questionContents:", questionContents);
@@ -85,7 +115,6 @@ const updateQuestionContents = async (questionId, questionContents) => {
 }
 
 // - - - Update question points - - -
-
 const updateQuestionPoints = async (questionId, questionPoints) => {
     console.log("dataService.js, updateQuestionPoints, questionId:", questionId);
     console.log("dataService.js, updateQuestionPoints, questionPoints:", questionPoints);
@@ -95,7 +124,6 @@ const updateQuestionPoints = async (questionId, questionPoints) => {
 }
 
 // - - - Update answer option contents - - -
-
 const updateAnswerOptionContents = async (answerOptionId, answerOptionContents) => {
     console.log("dataService.js, updateAnswerOptionContents, answerOptionId:", answerOptionId);
     console.log("dataService.js, updateAnswerOptionContents, answerOptionContents:", answerOptionContents);
@@ -109,7 +137,6 @@ const updateAnswerOptionContents = async (answerOptionId, answerOptionContents) 
 }
 
 // - - - Toggle correct answer option - - -
-
 const toggleCorrectAnswer = async (answerOptionId, isCorrect) => {
     const response = await axios.put(`${URL}/answer_options/${answerOptionId}/is_correct`, {
         is_correct: isCorrect
@@ -118,8 +145,22 @@ const toggleCorrectAnswer = async (answerOptionId, isCorrect) => {
     return response.data
 }
 
-// - - - Delete answer option - - -
+// - - - Delete exam - - -
+const deleteExam = async (examId) => {
+    console.log("dataService.js, deleteExam, examId:", examId)
+    const response = await axios.delete(`${URL}/exams/${examId}`, setHeaders)
+    console.log("dataService.js, deleteExam, response.data:", response.data)
+    return response.data
+}
 
+// - - - Delete Question - - -
+const deleteQuestion = async (questionId) => {
+    const response = await axios.delete(`${URL}/questions/${questionId}`, setHeaders)
+    console.log("dataService.js, deleteQuestion, response.data:", response.data)
+    return response.data
+}
+
+// - - - Delete answer option - - -
 const deleteAnswerOption = async (answerOptionId) => {
     const response = await axios.delete(`${URL}/answer_options/${answerOptionId}`, setHeaders)
     console.log("dataService.js, deleteAnswerOption, response.data:", response.data)
@@ -127,11 +168,15 @@ const deleteAnswerOption = async (answerOptionId) => {
 }
 
 const dataService = {
+    getUsers,
+    getStaff,
+    getExams,
     getExam,
     getQuestionsForExam,
     getAnswerOptions,
     getAnswerOptionsForExam,
 
+    addExam,
     addQuestion,
     addAnswerOption,
 
@@ -141,7 +186,9 @@ const dataService = {
     updateAnswerOptionContents,
     toggleCorrectAnswer,
 
-    deleteAnswerOption
+    deleteExam,
+    deleteQuestion,
+    deleteAnswerOption,
 }
 
 export default dataService

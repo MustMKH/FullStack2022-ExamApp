@@ -1,12 +1,17 @@
-// import e from 'cors';
-import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'
+import { useRef, useState, useEffect, useContext } from 'react'
+import AuthContext from '../context/AuthProvider'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios';
 
 const LOGIN_URL = 'https://localhost:8080/api/login'
 
 function Login() {
-    // const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useContext(AuthContext);
+
+    // const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from?.pathname || "/"
+
     const userRef = useRef();
     const errRef = useRef();
 
@@ -28,26 +33,30 @@ function Login() {
         event.preventDefault();
 
         try {
-            /*             console.log("Login.js, handleSubmit, user:", user)
-                        console.log("Login.js, handleSubmit, pwd:", pwd) */
+            console.log("Login.js, handleSubmit, user:", user)
+            console.log("Login.js, handleSubmit, pwd:", pwd)
             const response = await axios.post(LOGIN_URL,
-                // JSON.stringify({user, pwd}),
                 {
-                    /*                     headers: { 'Content-Type': 'application/json' },
-                                        withCredentials: true */
                     email: user,
                     password: pwd
                 }
             );
-            /*             console.log("Login.js, handleSubmit, response:", response)
-                        console.log("Login.js, handleSubmit, response.data:", response.data)
-                        console.log("Login.js, handleSubmit, response.data.data:", response.data.data)
-                        console.log("Login.js, handleSubmit, response.data.data.token:", response.data.data.token) */
+            console.log("Login.js, handleSubmit, response:", response)
+            console.log("Login.js, handleSubmit, response.data:", response.data)
+            console.log("Login.js, handleSubmit, response.data.data:", response.data.data)
+            console.log("Login.js, handleSubmit, response.data.data.token:", response.data.data.token)
             localStorage.setItem("token", response?.data?.data?.token)
-
+            localStorage.setItem("role", response?.data?.data?.role)
+            const accessToken = response.data.data.token
+            const role = response.data.data.role
+            console.log("Login.js, handleSubmit, accessToken:", accessToken)
+            console.log("Login.js, handleSubmit, role:", role)
+            // TODO: Remove password ???
+            setAuth({ user, pwd, role, accessToken })
             setUser('');
             setPwd('');
             setSuccess(true);
+            // navigate(from, { replace: true })
         } catch (error) {
             if (!error?.response) {
                 setErrMsg('Palvelin ei vastaa');

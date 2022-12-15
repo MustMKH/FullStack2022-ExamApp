@@ -1,114 +1,84 @@
 import { useState, useEffect } from 'react'
 import { Link } from "react-router-dom"
-import axios from 'axios'
-import Spinner from './Spinner'
+// import Spinner from './Spinner'
+import dataService from '../service/dataService'
 
 // TODO: Add confirmation to deleting exams
-
-// TODO: Add toast to confirm successful deletion
+// TODO: Add loading spinner
+// TODO: Exams do not load on first login ???
 
 const Exams = () => {
-    const EXAMS_URL = 'https://localhost:8080/api/exams'
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
 
-    const [exams, setExams] = useState([])
-    let token = localStorage.getItem('token')
+    const [exams, setExams] = useState()
+
+    const getExams = async () => {
+        // setIsLoading(true);
+        try {
+            const response = await dataService.getExams()
+            console.log("Exams.js, getExams, response:", response)
+            setExams(response)
+        } catch (error) {
+            console.error(error)
+        }
+        // setIsLoading(false)
+    }
 
     const deleteExam = async (id) => {
-        setIsLoading(true);
-        const EXAM_URL = `https://localhost:8080/api/exams/${id}`
+        // setIsLoading(true);
         console.log("Exams.js, deleteExam, id =", id)
         try {
-            const response = await axios.delete(EXAM_URL, {
-                headers: {
-                    Authorization: `bearer ${token}`
-                }
-            })
-            setExams(exams.filter(exam => exam.exam_id !== id))
-            window.location = "/opettaja/tentit/"
-            setIsLoading(false)
+            const response = await dataService.deleteExam(id)
+            console.log("Exams.js, deleteExam, response:", response)
+            setExams((exams) => exams.filter((exam) => exam.id !== id))
         } catch (error) {
             console.error(error.message)
         }
-        setIsLoading(false)
+        // setIsLoading(false)
     }
 
     const addExam = async () => {
-        setIsLoading(true);
+        // setIsLoading(true);
+        console.log("Exams.js, addExam")
         try {
-            const response = await axios.post(EXAMS_URL, {
-                title: "UUSI TENTTI - MUOKKAA TÄSTÄ"
-            }, {
-                headers: {
-                    Authorization: `bearer ${token}`
-                }
-            })
+            const response = await dataService.addExam()
             console.log("Exams.js, addExam, response:", response)
-            console.log("Exams.js, addExam, response.data:", response.data)
-            window.location = "/opettaja/tentit/"
+            setExams(prevExams => [...prevExams, { id: response.id, title: response.title }])
         } catch (error) {
             console.error(error.message)
         }
-        setIsLoading(false)
+        // setIsLoading(false)
     }
 
     useEffect(() => {
-        let isMounted = true
-
-        console.log("Exams.js, token:", token)
-
-        // - - - Get exams - - -
-        const getExams = async () => {
-            setIsLoading(true);
-            try {
-                /* dispatch({ type: 'INIT_DATA', payload: response.data }); */
-                const response = await axios.get(EXAMS_URL, {
-                    headers: {
-                        Authorization: `bearer ${token}`
-                    }
-                })
-                /* console.log("Exams.js, getExams, response:", response)
-                console.log("Exams.js, getExams, response.data:", response.data) */
-                setExams(response.data)
-            } catch (error) {
-                console.error(error)
-            }
-            setIsLoading(false)
-        }
-
         getExams()
-
-        return () => {
-            isMounted = false
-        }
     }, [])
 
     return (
-        <div>
-            <h1 className='page-title'>Tentit</h1>
+        <main>
+            <div className='page-title'>Tentit</div>
+            <div className='sub-title'> Tenttejä palvelussa: {exams?.length || 0} kpl</div>
             <div className='exams'>
                 {exams?.length
                     ? (
-                        <ol className='exam-items'>
+                        <ol className='exam-items' >
                             {exams.map((exam, i) =>
-                                <li key={i}>
+                                <li key={i} data-testid={`exam-item-${i}`} >
                                     {/* TODO: Onclick to edit specific exam: - params={{ id: exam.id }} */}
                                     <Link to={`/opettaja/tentit/${exam.id}`} ><button className="big-btn"> Tentti {i + 1}: {exam?.title}</button></Link>
-                                    <button className='trash-btn' onClick={() => { isLoading ? <Spinner /> : deleteExam(exam?.id) }} disabled={isLoading}>
+                                    {/* <button className='trash-btn' onClick={() => { isLoading ? <Spinner /> : deleteExam(exam?.id) }} disabled={isLoading}> */}
+                                    <button className='trash-btn' onClick={() => { deleteExam(exam?.id) }}>
                                         <i className="fas fa-solid fa-trash"></i>
                                     </button>
                                 </li>)}
                             <li>
-                                <button className="big-btn" onClick={() => { isLoading ? <Spinner /> : addExam() }} disabled={isLoading}>LISÄÄ UUSI TENTTI</button>
+                                {/* <button className="big-btn" onClick={() => { isLoading ? <Spinner /> : addExam() }} disabled={isLoading}>LISÄÄ UUSI TENTTI</button> */}
+                                <button className="big-btn" onClick={() => addExam()}>LISÄÄ UUSI TENTTI</button>
                             </li>
                         </ol>
                     ) : <h1>Tenttejä haetaan palvelimelta.</h1>}
             </div>
-            <div>
-                <p><Link className='router-link' to='/opettaja/hallintapaneeli'>Takaisin hallintapaneeliin</Link></p>
-                <p><Link className='router-link' to='/opettaja/käyttäjät'>Siirry muokkaamaan käyttäjiä</Link></p>
-            </div>
-        </div>
+        </main>
     )
 }
 

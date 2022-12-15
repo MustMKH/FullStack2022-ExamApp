@@ -3,8 +3,6 @@ import dataService from '../service/dataService'
 import { Link, useParams } from "react-router-dom"
 import Question from './Question'
 
-// !!! FIND HARD CODED
-
 /* TODO: "Luo tenttitapahtuma" event
     - step 1: check if all questions have at least 2 answer options
       and at least 1 option is checked as correct
@@ -42,9 +40,6 @@ const ACTION = {
     TOGGLE_CORRECT_ANSWER: "TOGGLE_CORRECT_ANSWER",
     QUESTION_DELETED: "QUESTION_DELETED",
     ANSWER_OPTION_DELETED: "ANSWER_OPTION_DELETED",
-    // SAVING
-    DATA_SAVED: "DATA_SAVED",
-    SAVE_REQUIRED: "SAVE_REQUIRED"
 }
 
 const reducer = (state, action) => {
@@ -91,79 +86,91 @@ const reducer = (state, action) => {
             console.log("Failed to fetch answer options.")
             return { ...state, failedToFetchAnswerOptions: true, answerOptionsFetchInitiated: false }
 
-        // - - -   E D I T   E X A M S   -   U N D E R   C O N S T R U C T I O N   !!!   - - -
+        // - - - Turn exam title to placeholder on blur ??? - - -
         case ACTION.EXAM_RENAMED: {
-            // USE PATCH TO UPDATE TITLE ONLY !!!
-            console.log("Reducer called, exam renamed", action);
-            // PREVIOUS VERSION: return {...state, name: action.payload.name};
-            const stateCopy = { ...state, saveRequired: true }
-            // stateCopy.exams[action.payload.index].title = action.payload.title
+            console.log("EditExam.js, reducer, ACTION.EXAM_RENAMED, action", action);
+            const stateCopy = { ...state }
+            stateCopy.exam.title = action.payload.title
             return stateCopy
         }
 
         case ACTION.QUESTION_ADDED: {
-            console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, action", action)
             console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, action.payload", action.payload)
-            console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, state.questions", state.questions)
-            // const stateCopy = JSON.parse(JSON.stringify(state))
-            // console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, stateCopy", stateCopy)
-            state.questions.push({ contents: "UUSI KYSYMYS - MUOKKAA TÄSTÄ" })
-            return state
+            console.log("EditExam.js, reducer, ACTION.QUESTION_ADDED, state", state)
+            if (state.questions.length > 0) {
+                return { ...state, questions: [...state.questions, action.payload] }
+            } else {
+                return { ...state, questions: [...state.questions, action.payload], examDataRequested: true }
+            }
         }
 
         case ACTION.ANSWER_OPTION_ADDED: {
-            /*       the below code generates two answers at a time, used JSON.parse instead
-            const stateCopy = {...state}
-            stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].answers.push({contents: "Kirjoita vastausvaihtoehto tähän"})
-            return stateCopy */
-            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, action", action)
-            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, action", action.payload)
-            // const stateCopy = JSON.parse(JSON.stringify(state))
-            // console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, stateCopy", stateCopy)
-            state.answerOptions.push({ contents: "UUSI VASTAUSVAIHTOEHTO - MUOKKAA TÄSTÄ" })
-            return state
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, action.payload", action.payload)
+            console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_ADDED, state", state)
+            if (state.answerOptions.length > 0) {
+                return { ...state, answerOptions: [...state.answerOptions, action.payload] }
+            } else {
+                return { ...state, answerOptions: [...state.answerOptions, action.payload], examDataRequested: true }
+            }
         }
 
+        // - - - Turn question contents to placeholder on blur ??? - - -
         case ACTION.QUESTION_CONTENTS_EDITED: {
-            console.log("Reducer called, question edited.", action);
-            const stateCopy = { ...state, saveRequired: true }
-            // stateCopy.exams[action.payload.examIndex].questions[action.payload.questionIndex].contents = action.payload.contents
+            console.log("EditExam.js, reducer, ACTION.QUESTION_CONTENTS_EDITED, action.payload", action.payload);
+            const stateCopy = { ...state }
+            stateCopy.questions[action.payload.questionIndex].contents = action.payload.contents // This is currently unnecessary !!!
             return stateCopy
         }
 
+        // - - - Turn question contents to placeholder on blur ??? - - -
+        // - - - TODO: Point sum is broken !!! Accept numbers only !!! - - -
         case ACTION.QUESTION_POINTS_EDITED: {
             console.log("Reducer called, question points edited.", action)
-            const stateCopy = { ...state, saveRequired: true }
+            const stateCopy = { ...state }
+            stateCopy.questions[action.payload.questionIndex].points = action.payload.points // This is currently unnecessary !!!
             return stateCopy
         }
 
         // TODO !!!
         case ACTION.QUESTION_DELETED: {
             console.log("Reducer called, question deleted.", action);
+            /* MALLI A-S
+            case 'DELETE_EXAM':
+        return {
+            ...state,
+            exams: state.exams.filter(exam => exam.id !== action.payload),
+            selectedExam: null
+        }; */
+            /* MALLI OG APP (ei toimi!):
             return {
-                /*                 ...state,
-                                exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
-                                    ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
-                                } : exam)), */
+                ...state,
+                exams: state.exams.map((exam, i) => (i == action.payload.examIndex ? {
+                    ...exam, questions: exam.questions.filter((question, i) => i != action.payload.questionIndex)
+                } : exam)),
                 saveRequired: true
+            } */
+            return {
+                ...state,
+                questions: state.questions.filter(question => question.id !== action.payload.questionIndex)
+
             }
         }
 
-        // TODO !!!
+        // - - - Turn answer option contents to placeholder on blur ??? - - -
         case ACTION.ANSWER_OPTION_CONTENTS_EDITED: {
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action", action)
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action.payload", action.payload)
             return { ...state }
         }
 
-        // TODO !!!
+        // - - - TODO !!!  - - -
         case ACTION.TOGGLE_CORRECT_ANSWER: {
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action", action)
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_CONTENTS_EDITED, action.payload", action.payload)
             return { ...state }
         }
 
-        // TODO !!!
+        // - - - TODO !!!  - - -
         case ACTION.ANSWER_OPTION_DELETED: {
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, action", action)
             console.log("EditExam.js, reducer, ACTION.ANSWER_OPTION_DELETED, action", action.payload)
@@ -183,32 +190,19 @@ const reducer = (state, action) => {
             return stateCopy
         }
 
-        case ACTION.SAVE_REQUIRED:
-            return { ...state, saveRequired: action.payload }
-
-        case ACTION.DATA_SAVED:
-            return { ...state, dataSaved: action.payload }
-
-        case ACTION.DATA_RETRIEVED:
-            return { ...action.payload, examDataRetrieved: true }
-
         default:
             throw new Error("Unexpected action in the reducer function.")
     }
 }
 
 const Playground = () => {
-    // const { id: tenttiId } = useParams();
     let { tentti: examId } = useParams()
-    console.log(" - - - EXAM ID - - -", examId) // !!! HARD CODED !!!
-    // try useParams (?) react-router-dom
-    /*     let examId = ((window.location.href).toString())
-        examId = examId.split("/").pop() */
+    console.log("ExamData.js, examId", examId)
 
     let initialData = {
         exam: "",
-        questions: "",
-        answerOptions: "",
+        questions: [],
+        answerOptions: [],
 
         examRetrieved: true,
         questionsRetrieved: true,
@@ -238,74 +232,76 @@ const Playground = () => {
     }, [])
 
 
-    useEffect(() => {
+    // useEffect(() => {
+    // getExam, getQuestions and getAnswerOptions were inside a useEffect with appData as dependency - reason ???
 
-        // - - - Get selected exam - - -
-        const getExam = async () => {
-            try {
-                dispatch({ type: ACTION.EXAM_FETCH_INITIATED })
-                const result = await dataService.getExam(examId)
-                console.log("ExamData.js, getExam, result:", result)
-                dispatch({ type: ACTION.EXAM_RETRIEVED, payload: result })
-            } catch (error) {
-                console.error(error.message)
-                dispatch({ type: ACTION.FAILED_TO_FETCH_EXAM })
-            }
+    // - - - Get selected exam - - -
+    const getExam = async () => {
+        try {
+            dispatch({ type: ACTION.EXAM_FETCH_INITIATED })
+            const result = await dataService.getExam(examId)
+            console.log("ExamData.js, getExam, result:", result)
+            dispatch({ type: ACTION.EXAM_RETRIEVED, payload: result })
+        } catch (error) {
+            console.error(error.message)
+            dispatch({ type: ACTION.FAILED_TO_FETCH_EXAM })
         }
+    }
 
-        // - - - Get questions for selected exam - - -
-        const getQuestions = async () => {
-            try {
-                dispatch({ type: ACTION.QUESTIONS_FETCH_INITIATED })
-                const result = await dataService.getQuestionsForExam(examId)
-                console.log("ExamData.js, getQuestions, result:", result)
-                // const itemList = todoList.map(({item_name})=> item_name)
-                if (result.length > 0) {
-                    dispatch({ type: ACTION.QUESTIONS_RETRIEVED, payload: result })
-                } else {
-                    dispatch({ type: ACTION.NO_QUESTIONS_FOUND, payload: { noQuestionsFound: true } })
-                }
-            } catch (error) {
-                console.error(error.message)
-                dispatch({ type: ACTION.FAILED_TO_FETCH_QUESTIONS })
+    // - - - Get questions for selected exam - - -
+    const getQuestions = async () => {
+        try {
+            dispatch({ type: ACTION.QUESTIONS_FETCH_INITIATED })
+            const result = await dataService.getQuestionsForExam(examId)
+            console.log("ExamData.js, getQuestions, result:", result)
+            // const itemList = todoList.map(({item_name})=> item_name)
+            if (result.length > 0) {
+                dispatch({ type: ACTION.QUESTIONS_RETRIEVED, payload: result })
+            } else {
+                dispatch({ type: ACTION.NO_QUESTIONS_FOUND, payload: { noQuestionsFound: true } })
             }
+        } catch (error) {
+            console.error(error.message)
+            dispatch({ type: ACTION.FAILED_TO_FETCH_QUESTIONS })
         }
+    }
 
-        // - - - Get answer options for questions in the selected exam - - -
-        const getAnswerOptions = async () => {
-            let questions = appData.questions
-            let questionIds = questions.map(({ id }) => id)
-            questionIds = questionIds.join(" OR ")
-            console.log("ExamData.js, getAnswerOptions, questionIds:", questionIds)
-            try {
-                dispatch({ type: ACTION.ANSWER_OPTIONS_FETCH_INITIATED })
-                const result = await dataService.getAnswerOptionsForExam(examId)
-                console.log("ExamData.js, getAnswerOptions, result:", result)
-                if (result.length > 0) {
-                    dispatch({ type: ACTION.ANSWER_OPTIONS_RETRIEVED, payload: result })
-                } else {
-                    dispatch({ type: ACTION.NO_ANSWER_OPTIONS_FOUND, payload: { noAnswerOptionsFound: true } })
-                }
-            } catch (error) {
-                console.error(error.message)
-                dispatch({ type: ACTION.FAILED_TO_FETCH_ANSWER_OPTIONS })
+    // - - - Get answer options for questions in the selected exam - - -
+    const getAnswerOptions = async () => {
+        /*         let questions = appData.questions
+                let questionIds = questions.map(({ id }) => id)
+                questionIds = questionIds.join(" OR ")
+                console.log("ExamData.js, getAnswerOptions, questionIds:", questionIds) */
+        try {
+            dispatch({ type: ACTION.ANSWER_OPTIONS_FETCH_INITIATED })
+            const result = await dataService.getAnswerOptionsForExam(examId)
+            console.log("ExamData.js, getAnswerOptions, result:", result)
+            if (result.length > 0) {
+                dispatch({ type: ACTION.ANSWER_OPTIONS_RETRIEVED, payload: result })
+            } else {
+                dispatch({ type: ACTION.NO_ANSWER_OPTIONS_FOUND, payload: { noAnswerOptionsFound: true } })
             }
+        } catch (error) {
+            console.error(error.message)
+            dispatch({ type: ACTION.FAILED_TO_FETCH_ANSWER_OPTIONS })
         }
+    }
 
 
-        appData.examDataRequested && getExam()
-        appData.questionsDataRequested && getQuestions()
-        appData.answerOptionsDataRequested && getAnswerOptions()
+    appData.examDataRequested && getExam()
+    appData.questionsDataRequested && getQuestions()
+    appData.answerOptionsDataRequested && getAnswerOptions()
 
-    }, [appData])
+    // }, [appData])
 
     const addQuestion = async () => {
         console.log("Examdata.js, addQuestion")
         try {
             const response = await dataService.addQuestion(examId)
+            console.log("Examdata.js, addQuestion, response", response)
             dispatch({
                 type: ACTION.QUESTION_ADDED,
-                payload: { exam_id: examId }
+                payload: response
             })
         } catch (error) {
             console.error(error.message)
@@ -331,9 +327,7 @@ const Playground = () => {
             dispatch({
                 type: ACTION.EXAM_RENAMED,
                 payload: {
-                    title: examTitle,
-                    // examIndex: examIndex,
-                    examId: examId
+                    title: examTitle
                 }
             })
         } catch (error) {
@@ -342,7 +336,7 @@ const Playground = () => {
     }
 
     return (
-        <div>
+        <main>
             <div className='page-title'>Täällä voi editoida kokeita, jiihaa!</div>
 
             <div>
@@ -362,18 +356,18 @@ const Playground = () => {
             <div>
                 <h1 className='main-title'>Tentin otsikko:</h1>
                 <div>
-                    <input className="input-exam-title" type="text" onChange={editExamTitle} placeholder={appData.examRetrieved && appData.exam.title} />
-                </div><h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3>
+                    <input className="input-exam-title" title='Muokkaa tentin otsikkoa' type="text" onChange={editExamTitle} placeholder={appData.examRetrieved && appData.exam.title} />
+                </div>
+                {/* <h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3> */}
                 <div>
                     <h2 className='section-title'>Kysymykset:</h2>
-                    <button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
+                    {/* <button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button> */}
                     <ol className='question-items'>
-                        {/* {appData.examDataRetrieved && appData.questions.map((question, index) => <Question questionIndex={index} question={question} dispatch={dispatch} />)} */}
                         {appData.questionsRetrieved && appData.questions.map((question, index) =>
                             <li key={index}>
                                 <Question answerOptionsRetrieved={appData.answerOptionsRetrieved} exam={appData.exam} questions={appData.questions} question={question} questionIndex={index} answerOptions={appData.answerOptions} dispatch={dispatch} />
                             </li>)}
-                    </ol><button className='small-btn' >Lisää uusi kysymys</button>
+                    </ol><button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
 
 
                 </div>
@@ -386,7 +380,7 @@ const Playground = () => {
                 </div>
 
             </div>
-        </div>
+        </main>
     )
 }
 

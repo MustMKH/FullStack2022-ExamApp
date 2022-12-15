@@ -10,6 +10,10 @@
   --highlight: #f1ec58;
 }
 
+.content-container {
+  min-height: calc(100vh - 186px);
+}
+
 /* .exams {
   display: flex;
   align-items:center;
@@ -55,6 +59,7 @@
 }
 
 .nav {
+  /* margin: 0; */
   display: flex;
   align-items: center;
   background-color: var(--dark);
@@ -95,14 +100,13 @@ body {
 }
 
 .main-title {
-  margin-left: 25px;
   font-size: 28px;
   margin-top: 60px;
 }
 
-.section-title {
+/* .section-title {
   margin-left: 25px;
-}
+} */
 
 .sub-title {
   font-size: 20px;
@@ -110,8 +114,7 @@ body {
 }
 
 footer {
-  padding-top: 30px;
-  margin: 15px;
+  margin-left: 20px;
 }
 
 .main-help {
@@ -125,7 +128,7 @@ footer {
 }
 
 main {
-  margin: 30px;
+  margin: 4rem;
 }
 
 .input-exam-title,
@@ -139,7 +142,7 @@ main {
 }
 
 .input-points {
-  width: 30px;
+  width: 34px;
   height: 24px;
   font-size: medium;
   border-radius: 2px;
@@ -151,7 +154,7 @@ main {
 }
 
 .input-exam-title {
-  margin-left: 25px;
+  /* margin-left: 25px; */
   margin-bottom: 40px;
 }
 
@@ -159,31 +162,36 @@ main {
   width: 35rem;
   background-color: var(--dgrad);
   font-size: medium;
-  margin: 8px;
+  /* margin: 8px; */
   padding: 10px;
   outline-color: var(--primary);
   outline-style: auto;
   color: var(--light);
   letter-spacing: 0.1rem;
   cursor: pointer;
+  margin-right: 3px;
 }
 
 .big-btn:hover {
   transform: scale(1.02);
   color: var(--highlight);
-  transition: background-color 1s ease-out 50ms;
+  /* transition: background-color 1s ease-out 50ms; */
 }
 
 .small-btn {
   background-color: var(--primary);
   font-size: small;
-  margin-left: 30px;
+  /* margin-left: 30px; */
   padding: 10px;
   outline-color: darkgray;
   outline-style: auto;
   color: var(--light);
   letter-spacing: 0.1rem;
   cursor: pointer;
+}
+
+.small-btn+.small-btn {
+  margin-left: 30px
 }
 
 .small-btn:hover {
@@ -345,9 +353,10 @@ button {
 .login-form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  margin-top: 5rem;
+  /* justify-content: center; */
   align-items: center;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   padding: 1rem 0.5rem;
 }
 
@@ -357,7 +366,8 @@ button {
 }
 
 .page-title {
-  margin: 3rem;
+  /* margin: 3rem; */
+  margin-bottom: 3rem;
   font-size: 4em;
   letter-spacing: -2px;
   border-bottom: 2px solid var(--dgrad);
@@ -379,4 +389,33 @@ button {
 
 span+span {
   margin-left: 10px;
+}
+
+.user-table {
+  margin-top: 25px;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+
+table {
+  border: 2px solid gray;
+  background-color: var(--primary);
+  color: var(--light);
+  width: 800px;
+  padding: 14px;
+}
+
+th {
+  text-align: left;
+  border-bottom: 1px solid gray;
+}
+
+/* td+td,
+th+th {
+  border-left: 1px dotted gray;
+} */
+
+td {
+  text-align: left;
 }

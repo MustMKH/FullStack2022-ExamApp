@@ -1,7 +1,6 @@
 import { Navigate } from 'react-router-dom'
-import React from 'react'
 
-const ExamEvent = () => {
+const StudentExam = () => {
     return (
         <main>
             <Navigate to='/keskeneräinen' />
@@ -9,4 +8,4 @@ const ExamEvent = () => {
     )
 }
 
-export default ExamEvent
+export default StudentExam

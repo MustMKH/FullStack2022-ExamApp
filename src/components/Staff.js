@@ -1,26 +1,26 @@
 import { useState, useEffect } from 'react'
 import dataService from '../service/dataService'
 
-const USERS_URL = 'https://localhost:8080/api/users'
+const STAFF_URL = 'https://localhost:8080/api/staff'
 
-const Users = () => {
-    const [users, setUsers] = useState([])
+const Staff = () => {
+    const [staff, setStaff] = useState([])
 
     useEffect(() => {
         let isMounted = true
         // const controller = new AbortController()
 
-        const getUsers = async () => {
+        const getStaff = async () => {
             try {
-                const response = await dataService.getUsers()
-                console.log("Users.js, Users, useEffect, getUsers, response:", response)
-                isMounted && setUsers(response)
+                const response = await dataService.getStaff()
+                console.log("Staff.js, Staff, useEffect, getStaff, response:", response)
+                isMounted && setStaff(response)
             } catch (error) {
                 console.error(error)
             }
         }
 
-        getUsers()
+        getStaff()
 
         return () => {
             isMounted = false
@@ -31,21 +31,21 @@ const Users = () => {
     const getName = (email) => {
         let firstName = ((email).split('@')[0]).split('.')[0]
         let capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1)
-        /* console.log("Users.js, getName, firstName", firstName)
-        console.log("Users.js, getName, capitalizedFirstName", capitalizedFirstName) */
+        /* console.log("Staff.js, getName, firstName", firstName)
+        console.log("Staff.js, getName, capitalizedFirstName", capitalizedFirstName) */
         let lastName = ((email).split('@')[0]).split('.')[1]
         let capitalizedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1)
-        /* console.log("Users.js, getName, lastName", lastName)
-        console.log("Users.js, getName, capitalizedLastName", capitalizedLastName) */
+        /* console.log("Staff.js, getName, lastName", lastName)
+        console.log("Staff.js, getName, capitalizedLastName", capitalizedLastName) */
         return (`${capitalizedFirstName} ${capitalizedLastName}`)
     }
 
     return (
         <main>
             <div className='page-title'>
-                Oppilaat
+                Henkilökunta
             </div>
-            <div className='sub-title'> Oppilaita kirjoilla: {users?.length || 0} kpl</div>
+            <div className='sub-title'> Henkilöstön määrä: {staff?.length || 0} kpl</div>
             <div className="user-table">
                 <table>
                     <thead>
@@ -53,16 +53,14 @@ const Users = () => {
                             <th>Tunnus</th>
                             <th>Nimi</th>
                             <th>Sähköpostiosoite</th>
-                            {/* <th>Role</th> */}
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user, i) =>
+                        {staff.map((member, i) =>
                             <tr key={i}>
-                                <td>{user?.id}</td>
-                                <td>{getName(user.email)}</td>
-                                <td>{user?.email}</td>
-                                {/* <td>{user?.role}</td> */}
+                                <td>{member?.id}</td>
+                                <td>{getName(member.email)}</td>
+                                <td>{member?.email}</td>
                             </tr>)}
                     </tbody>
                 </table>
@@ -71,4 +69,4 @@ const Users = () => {
     )
 }
 
-export default Users
+export default Staff

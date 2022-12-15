@@ -1,12 +1,12 @@
-/* import picture from './images/image-222.png'
+import picture from './images/image-222.png'
 
 const UnderConstruction = () => {
     return (
-        <div>UnderConstruction
+        <main>
             <div className='page-title'>Tämä osio on vielä keskeneräinen</div>
-            <img src={picture} alt="Work in progress" />
-        </div>
+            <img src={picture} width="600px" alt="Work in progress" />
+        </main>
     )
 }
 
-export default UnderConstruction */
+export default UnderConstruction

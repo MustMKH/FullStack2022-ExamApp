@@ -10,19 +10,18 @@ const Dashboard = () => {
   const nimi = "Roosa"
 
   return (
-    <Fragment>
+    <main>
       <div className='page-title'>Tenttisovelluksen tietojen hallinta</div>
-      <ul>
+      <div>
         <h1>Hei {nimi}, tervetuloa opettajan käyttöliittymään!</h1>
-        <p>Täällä voit hallita sovelluksen tietoja. Pääset muokkaamaan käyttäjiä, tenttejä, tenttien kysymyksiä ja<br />
-          vastausvaihtoehtoja alla olevista napeista.</p>
-        <Link to="/opettaja/tentit"><button className='big-btn'>Muokkaa tenttejä tästä</button></Link>
-        <Link to="/opettaja/käyttäjät"><button className='big-btn'>Muokkaa käyttäjiä tästä</button></Link>
-        {/*         <h3>Pääset muokkaamaan tenttejä, kysymyksiä ja vastausvaihtoehtoja <Link to="/opettaja/tentit">tästä</Link></h3>
-        <h3>Pääset muokkaamaan käyttäjien tietoja <Link to="/opettaja/käyttäjät">tästä</Link></h3> */}
-
-      </ul>
-    </Fragment>
+        <p>Pääset muokkaamaan tenttejä ja oppilaiden tietoja, sekä katsomaan tenttituloksia alla olevista painikkeista.</p>
+        <div className='dashboard-items'>
+          <Link to="/opettaja/tentit"><button className='big-btn'>Muokkaa tenttejä</button></Link><br />
+          <Link to="/opettaja/oppilaat"><button className='big-btn'>Muokkaa oppilaiden tietoja</button></Link><br />
+          <Link to="/keskeneräinen"><button className='big-btn'>Tenttitulokset</button></Link>
+        </div>
+      </div>
+    </main>
   )
 }
 

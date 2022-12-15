@@ -1,9 +1,8 @@
-import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <Fragment >
+    <main >
       <div >
         <div className='page-title'>Tervetuloa tenttisovellukseen!</div>
         <div className='info'>
@@ -17,7 +16,7 @@ const Home = () => {
           <h4>Huomaathan, että luotuasi käyttäjätilin, tenttisi tulevat näkyviin viiveellä.</h4>
         </div>
       </div>
-    </Fragment>
+    </main >
   )
 }
 

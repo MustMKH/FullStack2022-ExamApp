@@ -20,7 +20,7 @@ const Question = (props) => {
       const response = await dataService.addAnswerOption(questionId)
       props.dispatch({
         type: ACTION.ANSWER_OPTION_ADDED,
-        payload: { questionIndex: props.questionIndex }
+        payload: response
       })
     } catch (error) {
       console.error(error.message)
@@ -76,28 +76,20 @@ const Question = (props) => {
     }
   }
 
-  let examPointList = questions.map(({ points }) => points)
-  let examPoints = examPointList.reduce((prev, next) => {
-    return (prev + next)
-  })
+  // TODO: Move this (to the reducer ??? ) to avoid unneccessary repetition !!!
+  let examPoints = (questions.reduce((i, { points }) => i + parseInt(points), 0))
 
   return (
     <div>
       <span className="question-items">
         <input className="input-question" type="text" title='Muokkaa kysymystä' onChange={editQuestionContents} placeholder={props.question.contents} />
-        {/* Adding a plus <button> for adding questions, this causes an error:
-        onClick={()=> props.dispatch({type:"ADD_QUESTION", payload:{examIndex:props.examIndex}})}
-        <button id="big-button" onClick={() => props.dispatch({ type: 'ADD_QUESTION' })}>Lisää uusi kysymys</button> */}
-
-        {/* Adding a minus <button> for deleting questions, this does nothing:
-        onClick={()=> props.dispatch({type:"DELETE_QUESTION", payload:{examIndex:props.examIndex}})}*/}
         <button className='trash-btn' title='Poista kysymys' onClick={deleteQuestion}>
           <i className="fas fa-solid fa-trash"></i>
         </button>
       </span>
       <span>
         PISTEET:</span>
-      <span><input className="input-points" title='Muokkaa kysymyksen pisteitä' type="text" onChange={editQuestionPoints} placeholder={props.question.points} /></span><span>/{examPoints}
+      <span><input className="input-points" title='Muokkaa kysymyksen pisteitä' type="number" min="0" max="99" onChange={editQuestionPoints} value={props.question.points} /></span><span>/{examPoints}
       </span>
       <h4 className="answer-title">Vastausvaihtoehdot:</h4>
 

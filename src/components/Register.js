@@ -51,11 +51,11 @@ const Register = () => {
     const handleSubmit = async (event) => {
         event.preventDefault(); // prevents the page from refreshing
         // Add a dispatch here? -Register initiated, etc. see example from rest api app
-        // if button enabled with JS hack:
+        // This doublecheck prevents anyone from enabling the button with a JavaScript hack:
         const v1 = USER_REGEX.test(user);
         const v2 = PWD_REGEX.test(pwd);
         if (!v1 || !v2) {
-            setErrMsg("Virheellinen sähköpostiosoite tai salasana");
+            setErrMsg("Pääsy evätty");
             return;
         }
         try {
@@ -64,24 +64,21 @@ const Register = () => {
             const response = await axios.post(REGISTER_URL,
                 // JSON.stringify({ user, pwd }),
                 {
-                    /* These are not needed, because the headers are set in routes.js and queries.js
+                    /* These are not needed, because the headers are set in routes.js and queries.js:
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true, */
                     email: user,
                     password: pwd
                 }
             )
-
-            /*             console.log("Register.js, handleSubmit, response.data:", response?.data);
-                        console.log(response?.accessToken);
-                        console.log(JSON.stringify(response)) */
             console.log("Register.js, handleSubmit, response:", response)
+            console.log("Register.js, handleSubmit, deconstructed response:", JSON.stringify(response))
             console.log("Register.js, handleSubmit, response.data:", response.data)
             console.log("Register.js, handleSubmit, response.data.data:", response.data.data)
             console.log("Register.js, handleSubmit, response.data.data.token:", response.data.data.token)
             localStorage.setItem("token", response?.data?.data?.token)
             setSuccess(true);
-            // Clearing state and controlled inputs (the value attribute on inputs is needed for this)
+            // Clearing state and controlled inputs (the value attribute on inputs is needed for this):
             setUser('');
             setPwd('');
             setMatchPwd('');
@@ -184,7 +181,7 @@ const Register = () => {
                             <FontAwesomeIcon icon={faInfoCircle} />
                             Salasanojen täytyy täsmätä.
                         </p>
-                        {/* No onClick even required for the button below, because it is the only button in the form, submit event triggered instead*/}
+                        {/* No onClick event required for the button below, because it is the only button in the form, submit event triggered instead*/}
                         <button className="login-btn" disabled={!validName || !validPwd || !validMatch ? true : false}>Luo tunnus</button>
                     </form>
                     <p>
