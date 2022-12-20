@@ -5,7 +5,7 @@ import { AuthProvider } from '../context/AuthProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 // - - - COMPONENTS - - -
-// EditExam and GetExamData currently in Playground
+// EditExam and GetExamData are currently being edited in Playground
 import Layout from './Layout'
 import Playground from './Playground'
 import Exams from './Exams'
@@ -25,8 +25,7 @@ import StudentExam from './StudentExam'
 import ExamEvent from './ExamEvent'
 import UnAuthorized from './UnAuthorized'
 import UnAuthenticated from '../UnAuthenticated'
-
-// TODO:
+import LogoutSuccessful from './LogoutSuccessful'
 
 const App = () => {
 
@@ -43,34 +42,37 @@ const App = () => {
               <Route exact path='/rekisteröinti' element={<Register />} />
               <Route exact path='/keskeneräinen' element={<UnderConstruction />} />
               <Route exact path='/kirjauduttava' element={<UnAuthenticated />} />
+              <Route exact path='/uloskirjautuminen' element={<LogoutSuccessful />} />
 
-
-
-              {/* - - - TODO: PROTECTED ROUTES: OPETTAJA - - - */}
+              {/* - - - PROTECTED ROUTES: OPETTAJA - - - */}
               <Route element={<RequireAuth allowedRoles={[1111, 2222]} />}>
                 <Route exact path='/opettaja/hallintapaneeli' element={<Dashboard />} />
                 <Route exact path='/opettaja/tentit' element={<Exams />} />
                 <Route path='/opettaja/tentit/:tentti' element={<Playground />} />
-                <Route exact path='/opettaja/oppilaat' element={<Users />} />
+                <Route exact path='/oppilaat' element={<Users />} />
               </Route>
 
-              {/* - - - TODO: PROTECTED ROUTES: YLLÄPITÄJÄ - - - */}
+              {/* - - - PROTECTED ROUTES: YLLÄPITÄJÄ - - - */}
               <Route element={<RequireAuth allowedRoles={[1111]} />}>
                 <Route exact path='/opettajat' element={<Staff />} />
               </Route>
 
-              {/* - - - TODO: PROTECTED ROUTES: OPPILAS - - - */}
-              <Route path='/hallintapaneeli' element={<StudentDashboard />} />
-              <Route path='/tentit' element={<StudentExam />} />
-              <Route path='/tentit/:tentti' element={<ExamEvent />} />
+              {/* - - - PROTECTED ROUTES: OPPILAS - - - */}
+              <Route element={<RequireAuth allowedRoles={[1234]} />}>
+                <Route path='/hallintapaneeli' element={<StudentDashboard />} />
+                <Route path='/tentit' element={<StudentExam />} />
+                <Route path='/tentit/:tentti' element={<ExamEvent />} />
+              </Route>
+
               {/* - - - CATCHES - - - */}
               <Route exact path='/pääsy-evätty' element={<UnAuthorized />} />
               <Route path="*" element={<NotFound />} />
+
             </Route>
           </Routes>
         </div>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter >
   )
 }
 

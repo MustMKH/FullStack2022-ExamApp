@@ -1,0 +1,40 @@
+/* checkbox {
+    color: lime;
+    width: 2rem;
+    padding: 2 rem;
+}
+
+checkbox {
+    color: lime;
+    width: 2rem;
+    padding: 2 rem;
+} */
+
+.exam-event-answer-option {
+    margin-left: 25 px;
+}
+
+.answer-options-with-checkboxes {
+    display: flex;
+    flex-direction: row;
+}
+
+/* .question-items {
+    color: lime;
+    border: black;
+}*/
+
+.question-item {
+    margin-top: 1rem;
+}
+
+.answer-option-list {
+    /* border: black; */
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+}
+
+.answer-option-contents {
+    margin-left: 1rem;
+}

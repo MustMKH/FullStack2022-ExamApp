@@ -142,6 +142,24 @@ const isAdmin = async (req, res, next) => {
     }
 }
 
+// - - - USER CHECK - - -
+
+const isUser = async (req, res, next) => {
+    let role
+    try {
+        console.log("routes.js, isUser, argument req.decoded?.email =", req.decoded.email)
+        role = await queries.userCheck(req.decoded.email)
+        if (role === 1234) {
+            console.log("routes.js, isUser, if, role:", role)
+            next()
+        } else {
+            res.status(403).send("Unauthorized access.")
+        }
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
 // - - - VERIFY TOKEN - - -
 
 const verifyToken = (req, res, next) => {
@@ -212,7 +230,19 @@ router.get('/exams/:exam_id/questions', isAdmin, asyncHandler(async (req, res) =
     }
 }))
 
-// - - - Get answer options under specific question (req.params) / DELETE!!! - - -
+// - - - Get questions under specific exam (event) - - -
+router.get('/events/:exam_id/questions', isUser, asyncHandler(async (req, res) => {
+    console.log("routes.js, getQuestionsForExamEvent, req.params.exam_id:", req.params.exam_id)
+    const questions = await queries.getQuestionsForExamEvent(req.params.exam_id)
+    console.log("routes.js, getQuestionsForExamEvent, questions:", questions)
+    if (questions.length > 0) {
+        res.json(questions)
+    } else {
+        res.json({ message: "No questions found for the exam id provided" })
+    }
+}))
+
+/* // - - - Get answer options under specific question (req.params) - DELETE!!! - - -
 router.get('/questions/:question_id/answer_options', isAdmin, asyncHandler(async (req, res) => {
     const answerOptions = await queries.getAnswerOptionsForQuestion(req.params.question_id)
     if (answerOptions.length > 0) {
@@ -222,7 +252,7 @@ router.get('/questions/:question_id/answer_options', isAdmin, asyncHandler(async
     }
 }))
 
-// - - - Get answer options under specific question (req.body) / DELETE - - -
+// - - - Get answer options under specific question (req.body) - DELETE !!! - - -
 router.get('/answer_options', isAdmin, asyncHandler(async (req, res) => {
     const answerOptions = await queries.getAnswerOptionsForQuestion(req.body.question_id)
     if (answerOptions.length > 0) {
@@ -230,14 +260,26 @@ router.get('/answer_options', isAdmin, asyncHandler(async (req, res) => {
     } else {
         res.json({ message: "No questions found for the exam id provided" })
     }
-}))
+})) */
 
 // - - - Get all answer options for specific exam - - -
 router.get('/exams/:exam_id/answer_options', isAdmin, asyncHandler(async (req, res) => {
     console.log("routes.js, AnswerOptionsForExam, req.params.exam_id:", req.params.exam_id)
-    const AnswerOptionsForExam = await queries.getAnswerOptionsForExam(req.params.exam_id)
-    if (AnswerOptionsForExam?.length > 0) {
-        res.json(AnswerOptionsForExam)
+    const answerOptions = await queries.getAnswerOptionsForExam(req.params.exam_id)
+    console.log("routes.js, AnswerOptionsForExam, answerOptions:", answerOptions)
+    if (answerOptions?.length > 0) {
+        res.json(answerOptions)
+    } else {
+        res.json({ message: "No answer options found for the exam id provided" })
+    }
+}))
+
+// - - - Get all answer options for specific exam (event) - - -
+router.get('/events/:exam_id/answer_options', isUser, asyncHandler(async (req, res) => {
+    console.log("routes.js, getAnswerOptionsForExamEvent, req.params.exam_id:", req.params.exam_id)
+    const getAnswerOptionsForExamEvent = await queries.getAnswerOptionsForExam(req.params.exam_id)
+    if (getAnswerOptionsForExamEvent?.length > 0) {
+        res.json(getAnswerOptionsForExamEvent)
     } else {
         res.json({ message: "No answer options found for the exam id provided" })
     }
@@ -259,6 +301,17 @@ router.get('/users/:id', isAdmin, asyncHandler(async (req, res) => {
 // Get specific exam
 router.get('/exams/:id', isAdmin, asyncHandler(async (req, res) => {
     const exam = await queries.getExam(req.params.id)
+    if (exam) {
+        res.json(exam)
+    } else {
+        res.status(404).json({ message: "Exam not found" })
+    }
+}))
+
+// Get specific exam (event)
+router.get('/events/:id', isAdmin, asyncHandler(async (req, res) => {
+    console.log("routes.js, getExamEvent, req.params.id:", req.params.id)
+    const exam = await queries.getExamEvent(req.params.id)
     if (exam) {
         res.json(exam)
     } else {

@@ -1,16 +1,18 @@
 import { useRef, useState, useEffect, useContext } from 'react'
 import AuthContext from '../context/AuthProvider'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import axios from 'axios';
+// import useAuth from "../hooks/useAuth"
 
 const LOGIN_URL = 'https://localhost:8080/api/login'
 
 function Login() {
-    const { setAuth } = useContext(AuthContext);
+    // const { auth } = useAuth()
+    const { auth, setAuth } = useContext(AuthContext)
 
     // const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state?.from?.pathname || "/"
+    // const from = location.state?.from?.pathname || "/"
 
     const userRef = useRef();
     const errRef = useRef();
@@ -78,7 +80,9 @@ function Login() {
                     <h1>Kirjautuminen onnistui.</h1>
                     <br />
                     <p>
-                        <Link to="/opettaja/hallintapaneeli">Jatka sivulle tästä.</Link>
+                        {(auth.role == 1234) && <Link to={"/hallintapaneeli"}>Jatka sivulle tästä.</Link>}
+                        {(auth.role == 1111) && <Link to={"/opettaja/hallintapaneeli"}>Jatka sivulle tästä.</Link>}
+                        {(auth.role == 2222) && <Link to={"/opettaja/hallintapaneeli"}>Jatka sivulle tästä.</Link>}
                     </p>
                 </section>
             ) : (

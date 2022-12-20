@@ -100,7 +100,7 @@ const Register = () => {
                 <section>
                     <h1>Kirjautuminen onnistui!</h1>
                     <p>
-                        <Link to="/opettaja/hallintapaneeli">Jatka sivulle</Link>
+                        <Link to="/hallintapaneeli">Jatka sivulle</Link>
                     </p>
                 </section>
             ) : (

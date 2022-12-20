@@ -40,7 +40,7 @@ const getExam = async (examId) => {
 // - - - Get questions for the selected exam - - -
 const getQuestionsForExam = async (examId) => {
     const response = await axios.get(`${URL}/exams/${examId}/questions`, setHeaders)
-    console.log("dataService.js, getQuestions, response.data:", response.data)
+    console.log("dataService.js, getQuestionsForExam, response.data:", response.data)
     return response.data
 }
 
@@ -167,6 +167,30 @@ const deleteAnswerOption = async (answerOptionId) => {
     return response.data
 }
 
+// - - - GET EXAM EVENT - - -
+
+// - - - Get selected exam - - -
+const getExamEvent = async (examId) => {
+    const response = await axios.get(`${URL}/events/${examId}`, setHeaders)
+    console.log("dataService.js, getExamEvent, response.data:", response.data)
+    return response.data
+}
+
+// - - - Get questions for the selected exam - - -
+const getQuestionsForExamEvent = async (examId) => {
+    const response = await axios.get(`${URL}/events/${examId}/questions`, setHeaders)
+    console.log("dataService.js, getQuestionsForExamEvent, response.data:", response.data)
+    return response.data
+}
+
+// - - - Get answer options for the selected exam / GetExamData uses this - - -
+const getAnswerOptionsForExamEvent = async (examId) => {
+    console.log("dataService.js, getAnswerOptionsForExamEvent, examId:", examId)
+    const response = await axios.get(`${URL}/events/${examId}/answer_options`, setHeaders)
+    console.log("dataService.js, getAnswerOptionsForExam, response.data:", response.data)
+    return response.data
+}
+
 const dataService = {
     getUsers,
     getStaff,
@@ -189,6 +213,10 @@ const dataService = {
     deleteExam,
     deleteQuestion,
     deleteAnswerOption,
+
+    getExamEvent,
+    getQuestionsForExamEvent,
+    getAnswerOptionsForExamEvent,
 }
 
 export default dataService

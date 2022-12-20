@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Header from './Header';
+import Header from '../components/Header';
 
 // FAIL: TestingLibraryElementError: Unable to find an element with the text: /learn react/i.
 /* test('renders learn react link', () => {

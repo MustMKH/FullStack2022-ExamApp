@@ -19,3 +19,9 @@ ALTER TABLE question DROP CONSTRAINT fk_question_answer_option;
 ALTER TABLE question ADD CONSTRAINT fk_question_exam FOREIGN KEY (exam_id) REFERENCES exam (id) ON DELETE CASCADE;
 
 ALTER TABLE answer_option ADD CONSTRAINT fk__answer_option__question FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE;
+
+-- Exam event tables (*_copy):
+
+ALTER TABLE question_copy ADD CONSTRAINT fk__question_copy__exam_copy FOREIGN KEY (exam_id) REFERENCES exam_copy (id) ON DELETE CASCADE;
+
+ALTER TABLE answer_option_copy ADD CONSTRAINT fk__answer_option_copy__question_copy FOREIGN KEY (question_id) REFERENCES question_copy (id) ON DELETE CASCADE;

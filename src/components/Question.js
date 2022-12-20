@@ -1,5 +1,6 @@
 import dataService from '../service/dataService'
 import AnswerOption from "./AnswerOption"
+import '../styles/Question.css'
 
 const Question = (props) => {
   const answerOptions = props.answerOptions
@@ -76,7 +77,7 @@ const Question = (props) => {
     }
   }
 
-  // TODO: Move this (to the reducer ??? ) to avoid unneccessary repetition !!!
+  // TODO: Move this to avoid unneccessary repetition !!!
   let examPoints = (questions.reduce((i, { points }) => i + parseInt(points), 0))
 
   return (
@@ -110,7 +111,7 @@ const Question = (props) => {
                   dispatch={props.dispatch} />
               </li>
           )}<button className='small-btn' onClick={addAnswerOption}>Lisää uusi vastausvaihtoehto</button>
-        <button className='small-btn'>Arvo vastausvaihtoehtojen järjestys</button>
+        <button className='small-btn'>Sekoita vaihtoehdot</button>
       </ol>
     </div>
   );

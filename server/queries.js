@@ -84,6 +84,22 @@ const adminCheck = async (email) => {
 
 
 
+// - - - userCheck - - -
+const userCheck = async (email) => {
+    console.log("queries.js, userCheck, parameter email:", email)
+    const text = 'SELECT role FROM user_data WHERE email = $1'
+    const values = [email]
+    try {
+        const result = await pool.query(text, values)
+        console.log("queries.js, userCheck, result.rows[0]:", result.rows[0])
+        return result.rows[0].role
+    } catch (error) {
+        console.log("There was an error:", error)
+    }
+}
+
+
+
 // - - - Selects - - -
 
 // Select list of students
@@ -157,6 +173,18 @@ const getQuestionsForExam = async (examId) => {
     }
 }
 
+// Select questions under specific exam (event)
+const getQuestionsForExamEvent = async (examId) => {
+    console.log("queries.js, getQuestionsForExamEvent, examId:", examId)
+    const text = `SELECT * FROM question_copy WHERE exam_id = ${examId}`
+    try {
+        const result = await pool.query(text)
+        return result.rows
+    } catch (error) {
+        console.log("Unable to complete query. Error:", error)
+    }
+}
+
 // Select answer options under specific question(s)
 const getAnswerOptionsForQuestion = async (questionId) => {
     const text = `SELECT * FROM answer_option WHERE question_id = ${questionId}`
@@ -184,6 +212,21 @@ const getAnswerOptionsForExam = async (examId) => {
     }
 }
 
+// - - - Get all answer-options for specific exam (event) - - -
+const getAnswerOptionsForExamEvent = async (examId) => {
+    console.log("queries.js, getAnswerOptionsForExamEvent, examId:", examId)
+    const text = `SELECT * FROM question_copy, answer_option_copy WHERE question_copy.exam_id=${examId} AND answer_option_copy.question_id = question_copy.id`
+    try {
+        const result = await pool.query(text)
+        // console.log("queries.js, getAnswerOptionsForExam, result:", result)
+        console.log("queries.js, getAnswerOptionsForExamEvent, result.rowCount:", result.rowCount)
+        return result.rows
+    } catch (error) {
+        //console.log("There was an error:", error)
+        throw "Database error"
+    }
+}
+
 // Select specific user
 const getUser = async (id) => {
     // console.log("queries.js, getUser, parameter id:", id)
@@ -200,6 +243,18 @@ const getUser = async (id) => {
 const getExam = async (id) => {
     // console.log("queries.js, getExam, parameter id:", id)
     const text = `SELECT * FROM exam WHERE id = ${id}`
+    try {
+        const result = await pool.query(text)
+        return result.rows[0]
+    } catch (error) {
+        console.log("There was an error:", error.stack)
+    }
+}
+
+// Select specific exam
+const getExamEvent = async (id) => {
+    console.log("queries.js, getExamEvent, parameter id:", id)
+    const text = `SELECT * FROM exam_copy WHERE id = ${id}`
     try {
         const result = await pool.query(text)
         return result.rows[0]
@@ -414,6 +469,7 @@ module.exports = {
     signUp,
     login,
     adminCheck,
+    userCheck,
     getUsers,
     getStaff,
     getExams,
@@ -422,8 +478,11 @@ module.exports = {
     getQuestionsForExam,
     getAnswerOptionsForQuestion,
     getAnswerOptionsForExam,
+    getQuestionsForExamEvent,
+    getAnswerOptionsForExamEvent,
     getUser,
     getExam,
+    getExamEvent,
     getQuestion,
     getAnswerOption,
     createUser,

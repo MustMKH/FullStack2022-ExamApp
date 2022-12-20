@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from 'react'
 import dataService from '../service/dataService'
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import Question from './Question'
 
 /* TODO: "Luo tenttitapahtuma" event
@@ -9,7 +9,10 @@ import Question from './Question'
     - step 3: make "Luo tenttitapahtuma" button active when the above conditions are met
     - step 2: create a copy of the finished exam for students to take
     - step 3: require additional informaton such as exam date and time
-    - step 4 (optional): choose students/groups required to take exam */
+    - step 4 (optional): choose students/groups required to take exam
+    BACKEND:
+    - create tables, routes and queries for exam_copy, question_copy, answer_option_copy
+      (create for 2222, get for [1234, 2222, 1111] delete for 1111, update for [1234, 1111]) */
 
 console.log("TEMPORARY FILE NAME PLAYGROUND, REAL FILE NAME EXAMDATA")
 
@@ -337,7 +340,7 @@ const Playground = () => {
 
     return (
         <main>
-            <div className='page-title'>Täällä voi editoida kokeita, jiihaa!</div>
+            <div className='page-title'>Tentin muokkaus</div>
 
             <div>
                 <div>{appData.examFetchInitiated && "Haetaan tentin tietoja"}</div>
@@ -361,25 +364,18 @@ const Playground = () => {
                 {/* <h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3> */}
                 <div>
                     <h2 className='section-title'>Kysymykset:</h2>
-                    {/* <button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button> */}
+                    <button className='medium-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
                     <ol className='question-items'>
                         {appData.questionsRetrieved && appData.questions.map((question, index) =>
                             <li key={index}>
                                 <Question answerOptionsRetrieved={appData.answerOptionsRetrieved} exam={appData.exam} questions={appData.questions} question={question} questionIndex={index} answerOptions={appData.answerOptions} dispatch={dispatch} />
                             </li>)}
-                    </ol><button className='small-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
-
-
+                    </ol>
+                    <button className='medium-btn' onClick={addQuestion}>Lisää uusi kysymys</button>
                 </div>
             </div>
-            <div><h3 className='section-title'>Kun tentti on valmis, voit luoda tenttitapahtuman, jossa määritetään tentin ajankohta ja osallistujat:<button className='create-exam-event-btn' >Luo tenttitapahtuma</button></h3>
-                <div>
-                    <p><Link className='router-link' to='/opettaja/hallintapaneeli'>Takaisin hallintapaneeliin</Link></p>
-                    <p><Link className='router-link' to='/opettaja/tentit'>Siirry tenttilistaan</Link></p>
-                    <p><Link className='router-link' to='/opettaja/käyttäjät'>Siirry muokkaamaan käyttäjiä</Link></p>
-                </div>
-
-            </div>
+            <div className='sub-title'>Kun tentti on valmis, voit luoda tenttitapahtuman:</div>
+            <button className='create-exam-event-btn' >Luo tenttitapahtuma</button>
         </main>
     )
 }

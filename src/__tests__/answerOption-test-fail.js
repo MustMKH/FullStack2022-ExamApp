@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import AnswerOption from "./AnswerOption"
+import AnswerOption from "../components/AnswerOption"
 
 // const mockedSetTodo = jest.fn();
 

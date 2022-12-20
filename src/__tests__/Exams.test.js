@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import Exams from './Exams'
+import Exams from '../components/Exams'
 
 const MockExams = () => {
     return (
