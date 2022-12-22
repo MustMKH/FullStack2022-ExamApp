@@ -1,21 +1,30 @@
 # Tenttisovellus
 
-Keskeneräinen tenttisovellus. Full Stack 2022 ohjelmointikurssin projektisovellus.
+React sovellus, jossa opettajat voivat luoda ja muokata tenttejä ja oppilaat voivat tehdä tentin. Full Stack 2022 ohjelmistosuunnittelukoulutuksen projektisovellus.
 
-## Luotu uudet komponentit:
+## Rekisteröinti
 
-'Exams.js', 'Users.js', 'Unauthorized.js'
+![Registration Form](https://user-images.githubusercontent.com/114909607/209111686-d31c6717-4bce-4d36-bda2-fd3e1960700d.gif)
 
-## Viimeisimmät muutokset tehty tiedostoihin
+## Kokeen muokkaaminen
 
-'App.js', 'App.css'
+![Editing Exams](https://user-images.githubusercontent.com/114909607/209111800-fff823ec-62c5-471a-aac3-81d88b596eb5.gif)
+
+## Kokeen tekeminen
+
+![Taking an Exam](https://user-images.githubusercontent.com/114909607/209111886-5ab2a582-29e0-4980-afd9-b25660cd793e.gif)
+
+## Toteutukseen käytetyt teknologiat:
+
+React, JavaScript, CSS, HTML, PostgreSQL, Node.js, Express.js, REST
 
 ### Viimeisimmät muutokset uusimmasta vanhimpaan
 
-- Luotu komponentit Exams, Users ja Unauthorized
+- Luotu käyttäjäryhmien mukaan mukautuva Navigation Bar
+- Luotu Unauthorized, Not Found ja Login Required komponentit
 - Lisätty opettajan käyttöliittymään tenttien hakutoiminto
-- Luotu komponentit Home ja Dashboard
-- Luotu React Router Domin avulla polut sovelluksen eri osioihin
+- Luotu toiminto, joka tallentaa tietokantaan kopion muokatusta kokeesta koetilannetta varten
+- Luotu React Router Domin avulla polut sovelluksen eri osioihin suojauksineen
 - Token tallentuu Local Storageen kirjautumisen ja rekisteröitymisen yhteydessä.
 - Luotu React sovellukseen kirjautumistoiminto.
 - Luotu React sovellukseen rekisteröintitoiminto. Käyttäjätunnukset ja salatut salasanat tallentuvat tietokantaan.
